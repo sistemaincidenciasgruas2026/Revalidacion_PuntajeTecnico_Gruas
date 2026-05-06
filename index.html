@@ -1,0 +1,4863 @@
+
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SGPG SSA MARINE - Mantenimiento Gruas</title>
+
+ 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+
+
+<style>
+
+/* ============================= */
+/* ESTILO PRO TEST               */
+/* ============================= */
+
+.bloqueTarea{
+margin-top:25px;
+margin-bottom:10px;
+}
+
+.tituloTarea{
+background:#111827;
+color:white;
+padding:10px 14px;
+border-radius:8px;
+font-size:13px;
+font-weight:600;
+box-shadow:0 3px 8px rgba(0,0,0,0.15);
+}
+
+.preguntaItem{
+background:#f9fafb;
+border:1px solid #e5e7eb;
+border-radius:10px;
+padding:14px;
+margin-bottom:12px;
+transition:0.2s;
+}
+
+.preguntaItem:hover{
+background:#f3f4f6;
+transform:translateY(-1px);
+}
+
+.preguntaTexto{
+font-size:14px;
+margin-bottom:8px;
+color:#111827;
+}
+
+.numero{
+font-weight:700;
+margin-right:6px;
+color:#374151;
+}
+
+.inputCodigo input{
+background:white;
+border:1px solid #d1d5db;
+border-radius:8px;
+padding:10px;
+transition:0.2s;
+}
+
+.inputCodigo input:focus{
+border-color:#111827;
+box-shadow:0 0 0 2px rgba(17,24,39,0.1);
+}
+
+.inputCodigo{
+position:relative;
+margin-top:6px;
+}
+
+.inputCodigo input{
+width:100%;
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.codigoMarca{
+position:absolute;
+right:10px;
+bottom:6px;
+
+font-size:11px;
+font-weight:600;
+
+color:#6b7280;
+opacity:0.35;
+
+pointer-events:none;
+}
+
+/* ============================= */
+/* SIDEBAR PREMIUM               */
+/* ============================= */
+
+.logoArea{
+color:#111827;
+font-size:18px;
+font-weight:700;
+margin-bottom:20px;
+}
+
+.menu{
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.menuItem{
+display:flex;
+align-items:center;
+gap:10px;
+
+padding:12px;
+
+background:#374151;
+color:white;
+
+border-radius:8px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:all 0.25s;
+}
+
+.menuItem:hover{
+background:#1f2937;
+transform:translateX(4px);
+}
+
+.menuItem.active{
+background:#111827;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+
+.icon{
+font-size:18px;
+}
+.tabsPro{
+position:relative;
+display:flex;
+max-width:500px;
+width:100%;
+margin:0 auto;   /* centra horizontalmente */
+background:#f3f4f6;
+border-radius:12px;
+padding:6px;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.tabItem{
+
+flex:1;
+border:none;
+background:transparent;
+padding:12px;
+font-size:14px;
+font-weight:600;
+cursor:pointer;
+z-index:2;
+color:#374151;
+transition:0.2s;
+
+}
+
+.tabItem.active{
+
+color:#111827;
+
+}
+
+.tabSlider{
+
+position:absolute;
+height:80%;
+width:50%;
+background:white;
+border-radius:10px;
+top:10%;
+left:6px;
+transition:0.3s ease;
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+
+}
+
+
+canvas{
+  width:280px !important;
+  height:280px !important;
+  margin:auto;
+}
+
+/* PANEL DE FILTROS */
+
+.filtrosPT{
+display:grid;
+grid-template-columns: repeat(3, 1fr);
+gap:25px;
+margin:0 auto;   /* centra horizontalmente */
+width:100%;
+max-width:900px;
+margin:20px auto 0 auto; /* baja un poco el bloque */
+}
+
+ 
+
+.filtroItem{
+
+display:flex;
+
+flex-direction:column;
+
+align-items:flex-start;
+
+}
+
+
+ 
+
+.filtroItem label{
+
+  font-size:13px;
+
+  font-weight:600;
+
+  margin-bottom:4px;
+
+  color:#374151;
+
+}
+
+.choices{
+width:240px;
+}
+
+.choices__inner{
+min-height:34px;
+padding:4px 8px;
+font-size:13px;
+}
+ 
+
+.filtroItem select{
+padding:12px;
+border-radius:8px;
+border:1px solid #d1d5db;
+font-size:15px;
+width:100%;
+min-width:260px;
+}
+.choices{
+width:100%;
+min-width:260px;
+}
+
+.choices__inner{
+padding:8px;
+font-size:15px;
+min-height:30px;
+}
+.filtroItem label{
+font-size:14px;
+font-weight:600;
+margin-bottom:6px;
+color:#111827;
+}
+/* ============================= */
+
+/* ESTILOS GENERALES             */
+
+/* ============================= */
+
+body, html {
+
+  margin: 0;
+
+  padding: 0;
+
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+
+  background-color: #f4f6f8;
+
+  color: #333;
+
+}
+
+ 
+
+h1,h2,h3 { margin:0; }
+
+ 
+
+/* ============================= */
+
+/* LOGIN                         */
+
+/* ============================= */
+
+#loginScreen {
+  position: fixed;
+  inset: 0;
+
+  background-image: url("https://gogalvnmpntvjtiunowz.supabase.co/storage/v1/object/public/fondo/FGRUAS.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ 
+
+.login-wrapper { width: 420px; text-align: center; }
+
+ 
+
+.login-header-bar {
+
+  height: 6px;
+
+  background: #1f2937;
+
+  border-radius: 6px 6px 0 0;
+
+}
+
+ 
+
+.login-card {
+
+  background: white;
+
+  padding: 40px 45px;
+
+  border-radius: 0 0 12px 12px;
+
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+
+}
+
+ 
+
+.company-name {
+
+  font-size: 1.4em;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+
+  color: #111827;
+
+  margin-bottom: 6px;
+
+}
+
+ 
+
+.company-subtitle {
+
+  font-size: 0.9em;
+
+  color: #6b7280;
+
+  margin-bottom: 30px;
+
+}
+
+ 
+
+.input-group { text-align: left; margin-bottom: 20px; }
+
+ 
+
+.input-group label {
+
+  font-size: 0.85em;
+
+  color: #374151;
+
+  font-weight: 600;
+
+  display: block;
+
+  margin-bottom: 6px;
+
+}
+
+ 
+
+.login-input {
+
+  width: 100%;
+
+  padding: 11px 12px;
+
+  border-radius: 6px;
+
+  border: 1px solid #d1d5db;
+
+  font-size: 0.95em;
+
+}
+
+ 
+
+.login-input:focus { border-color: #1f2937; outline: none; }
+
+ 
+
+#loginBtn {
+
+  width: 100%;
+
+  padding: 12px;
+
+  border-radius: 6px;
+
+  border: none;
+
+  background: #1f2937;
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  margin-top: 10px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+}
+
+ 
+
+#loginBtn:hover { background: #111827; }
+
+ 
+
+#loginError {
+
+  margin-top: 14px;
+
+  font-size: 0.85em;
+
+  color: #b91c1c;
+
+  font-weight: 600;
+
+}
+
+ 
+
+.loader {
+
+  border: 2px solid #ffffff;
+
+  border-top: 2px solid #9ca3af;
+
+  border-radius: 50%;
+
+  width: 16px;
+
+  height: 16px;
+
+  animation: spin 0.8s linear infinite;
+
+  display: inline-block;
+
+  margin-left: 8px;
+
+}
+
+ 
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+ 
+
+/* ============================= */
+
+/* PANELES                        */
+
+/* ============================= */
+
+#mainPanel, #panelJefes { display:none; }
+
+ 
+
+.topbar {
+
+  background-color: #1f2937;
+
+  color: white;
+
+  padding: 15px 30px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+}
+
+ 
+
+.logo { font-size: 1.2em; font-weight: bold; }
+
+ 
+
+.user-area { display: flex; align-items: center; gap: 15px; }
+
+ 
+
+.logoutBtn {
+
+  background-color: #b91c1c;
+
+  border: none;
+
+  padding: 8px 14px;
+
+  border-radius: 6px;
+
+  color: white;
+
+  cursor: pointer;
+
+}
+
+ 
+
+/* Layout */
+
+.layout {
+
+  display: grid;
+
+  grid-template-columns: 240px 1fr 260px;
+
+  min-height: calc(100vh - 60px);
+
+}
+
+ 
+
+.sidebar {
+
+  background-color: #f3f4f6;
+
+  padding: 20px;
+
+  border-right: 1px solid #ddd;
+
+}
+
+ 
+
+.seccionBtn {
+
+  width: 100%;
+
+  margin-bottom: 10px;
+
+  padding: 10px;
+
+  border-radius: 6px;
+
+  background-color: #374151;
+
+  color: white;
+
+  border: none;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+}
+
+ 
+
+.seccionBtn.active { background-color: #111827; }
+
+ 
+
+.content { padding: 30px; }
+
+ 
+
+.card {
+
+  background-color: white;
+
+  padding: 20px;
+
+  margin-bottom: 20px;
+
+  border-radius: 12px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+}
+
+ 
+
+input[type="text"], select {
+
+  width: 100%;
+
+  padding: 8px 12px;
+
+  border-radius: 6px;
+
+  border: 1px solid #ccc;
+
+}
+
+ 
+
+.rightpanel {
+
+  background-color: #f9fafb;
+
+  padding: 20px;
+
+  border-left: 1px solid #ddd;
+
+}
+
+ 
+
+#progressContainer {
+
+  height: 14px;
+
+  background-color: #e5e7eb;
+
+  border-radius: 20px;
+
+  margin-bottom: 25px;
+
+}
+
+ 
+
+#progressBar {
+
+  height: 100%;
+
+  width: 0%;
+
+  background-color: #1f2937;
+
+  border-radius: 20px;
+
+}
+
+
+
+
+
+ 
+
+@media(max-width:900px){
+
+  .layout { grid-template-columns: 1fr; }
+
+  .sidebar, .rightpanel { display:none; }
+
+}
+
+ 
+
+</style>
+
+</head>
+
+<body>
+
+ 
+
+<!-- LOGIN -->
+
+<div id="loginScreen">
+
+  <div class="login-wrapper">
+
+    <div class="login-header-bar"></div>
+
+    <div class="login-card">
+
+      <div class="company-name">SISTEMA DE GESTION DE PERSONAL SSA</div>
+
+      <div class="company-subtitle">Mantenimiento Gruas</div>
+
+ 
+
+      <div class="input-group">
+
+        <label>Usuario</label>
+
+        <input type="text" id="username" class="login-input">
+
+      </div>
+
+ 
+
+      <div class="input-group">
+
+        <label>Contraseña</label>
+
+        <input type="password" id="password" class="login-input">
+
+      </div>
+
+ 
+
+      <button id="loginBtn">
+
+        <span id="loginText">Iniciar Sesión</span>
+
+        <span id="loginLoader" class="loader" style="display:none;"></span>
+
+      </button>
+
+ 
+
+      <div id="loginError"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+ 
+
+<!-- PANEL USUARIOS -->
+
+<div id="mainPanel">
+
+  <div class="topbar">
+
+    <div class="logo">TEST TEORICO DEL PUNTAJE TECNICO</div>
+
+    <div class="user-area">
+
+      <span id="userDisplay"></span>
+
+      <button class="logoutBtn" id="logoutBtnUser">Cerrar Sesión</button>
+
+    </div>
+
+  </div>
+
+ 
+
+  <div class="layout">
+
+    <aside class="sidebar">
+
+      <h3>Componentes</h3>
+
+      <div id="seccionesNav"></div>
+
+    </aside>
+
+ 
+
+    <main class="content">
+
+      <div id="progressContainer">
+
+        <div id="progressBar"></div>
+
+      </div>
+
+      <div id="componentesUsuario"></div>
+
+    </main>
+
+ 
+
+    <aside class="rightpanel">
+
+      <h3>Progreso</h3>
+
+      <p id="progresoTexto">0% completado</p>
+
+    </aside>
+
+  </div>
+
+</div>
+
+ 
+
+<!-- PANEL JEFATURA -->
+
+<div id="panelJefes">
+
+  <div class="topbar">
+
+    <div class="logo">GESTION BASE DE DATOS MANTENIMIENTO GRUAS</div>
+
+    <div class="user-area">
+
+      <span id="userDisplayJefe"></span>
+
+      <button class="logoutBtn" id="logoutBtnJefe">Cerrar Sesión</button>
+
+    </div>
+
+  </div>
+
+ 
+
+  <div class="layout">
+
+ 
+
+    <!-- SIDEBAR IGUAL QUE USUARIO -->
+
+<div class="sidebar">
+
+<div class="logoArea">
+Sistema de consultas 
+</div>
+
+<div class="menu">
+
+<div class="menuItem active" onclick="mostrarSeccionJefe(0)">
+
+<span>Puntaje técnico</span>
+</div>
+
+<div class="menuItem" onclick="mostrarSeccionJefe(1)">
+
+<span>Responsabilidades</span>
+</div>
+
+<div class="menuItem" onclick="mostrarSeccionJefe(2)">
+
+<span>Test teórico</span>
+
+</div>
+<div class="menuItem" onclick="mostrarSeccionJefe(3)">
+<span>Analisis Horas Hombre</span>
+</div>
+</div>
+
+</div>
+
+ 
+
+    <!-- CONTENIDO CENTRAL -->
+
+    <main class="content">
+
+      <div id="contenidoJefe"></div>
+
+    </main>
+
+ 
+
+<aside class="rightpanel" id="panelInfoTecnico" style="display:none;">
+
+  <h3>Informacion Personal</h3>
+
+  <img id="fotoTecnico" src="" alt="Foto técnico" width="200">
+
+  <div id="datosTecnico" style="margin-top:15px;"></div>
+
+  <br>
+
+<button id="btnPlanCarrera" onclick="mostrarPlanCarrera()"
+  style="
+  width:100%;
+  padding:10px;
+  background:#1f2937;
+  color:white;
+  border:none;
+  border-radius:6px;
+  font-weight:600;
+  cursor:pointer;
+  ">
+  Ver plan de carrera
+  </button>
+
+</aside>
+
+ 
+
+  </div>
+
+</div>
+
+ 
+
+<script>
+const coloresBase = [
+  "#1f77b4", // Mecanico
+  "#ff7f0e", // Electrico
+  "#2ca02c", // Limpieza
+  "#17becf"  // Rigger
+];
+
+// =============================
+
+// SUPABASE
+
+// =============================
+
+const supabaseUrl = "https://gogalvnmpntvjtiunowz.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdvZ2Fsdm5tcG50dmp0aXVub3d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNzM5MzcsImV4cCI6MjA4Nzg0OTkzN30.wOZbM_s2F-FjdrXqUz6lvRnOYAPuTYlGhwcP3hzbYTw";
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+ 
+async function cargarHHDisponibles(tipo, especialidadesOrden) {
+
+  const { data, error } = await supabaseClient
+    .from(tipo === "STS" ? "horashombre_sts" : "horashombre_rtg")
+    .select("*");
+
+  console.log("DATA DISP:", data);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    console.warn("Sin datos disponibles");
+    console.log("DATA DISP:", data);
+    return;
+  }
+
+
+
+
+
+  const datosConHorasDisponibles = data.map(row => {
+
+    console.log("ROW:", row);
+
+const personas = Number(
+  row["Personas actuales"] ??
+  row["Personas_actuales"] ??
+  row.personas_actuales ??
+  0
+);
+    const horasDisponibles = personas * 168;
+
+    return {
+      Especialidad: row["Especialidad 1"] || row.Especialidad,
+      horasDisponibles
+    };
+
+  });
+
+  const total = datosConHorasDisponibles.reduce((a,b)=>a + b.horasDisponibles,0);
+
+  datosConHorasDisponibles.forEach(d=>{
+
+    const porcentaje = total ? ((d.horasDisponibles / total) * 100).toFixed(1) : 0;
+
+
+  });
+
+  generarGraficoDisponibles(datosConHorasDisponibles, tipo, especialidadesOrden);
+
+// 🔥 NUEVO
+generarBalanceHH(datosConHorasDisponibles, tipo);
+}
+
+function generarGraficoDisponibles(data, tipo, especialidadesOrden) {
+
+  const mapa = {};
+  data.forEach(d => {
+    mapa[d.Especialidad] = d.horasDisponibles;
+  });
+
+  const labels = especialidadesOrden;
+  const valores = especialidadesOrden.map(e => mapa[e] || 0);
+
+  const canvas = document.getElementById(`chartHH_disp_${tipo}`);
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  if (window[`chart_disp_${tipo}`]) {
+    window[`chart_disp_${tipo}`].destroy();
+  }
+
+  window[`chart_disp_${tipo}`] = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels,
+      datasets: [{
+        data: valores,
+        backgroundColor: labels.map((_, i) => coloresBase[i])
+      }]
+    },
+    plugins: [ChartDataLabels],
+    options: {
+      plugins: {
+        legend: { position: "right" },
+        datalabels: {
+          color: "#fff",
+          formatter: (value, ctx) => {
+            const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+            return total ? Math.round((value/total)*100)+"%" : "0%";
+          }
+        }
+      }
+    }
+  });
+}
+async function cargarHorasHombre(tipo){
+
+  const contenedor = document.getElementById(
+    tipo === "STS" ? "resultadoHH_STS" : "resultadoHH_RTG"
+  );
+
+  if(!contenedor){
+    console.error("No existe el contenedor");
+    return;
+  }
+
+  contenedor.innerHTML = "Cargando...";
+
+  const { data, error } = await supabaseClient
+   .from(tipo === "STS" ? "horashombre_sts" : "horashombre_rtg")
+    .select("*");
+
+  if(error){
+    console.error(error);
+    contenedor.innerHTML = "Error al cargar datos";
+    return;
+  }
+
+  if(!data || data.length === 0){
+    contenedor.innerHTML = "No hay datos";
+    return;
+  }
+
+  procesarHH(data, contenedor, tipo);
+}
+function procesarHH(data, contenedor, tipo){
+
+  let resumen = {};
+  let totalHH = 0;
+
+  data.forEach(row => {
+
+    const esp = row["Especialidad 1"] || row["Especialidad"];
+    const hh = Number(row["Carga horaria/mes 1"] || 0);
+
+    if(!esp) return;
+
+    if(!resumen[esp]) resumen[esp] = 0;
+
+    resumen[esp] += hh;
+    totalHH += hh;
+
+  });
+
+  // ✅ AHORA sí, después de llenar resumen
+  const especialidadesOrden = Object.keys(resumen);
+  window[`resumen_${tipo}`] = resumen;
+  generarTablaHH(resumen, totalHH, contenedor, tipo);
+  generarGraficoHH(resumen, totalHH, tipo, especialidadesOrden);
+
+  // 🔥 llamada única (correcto)
+  cargarHHDisponibles(tipo, especialidadesOrden);
+}
+
+function generarTablaHH(resumen, totalHH, contenedor, tipo){
+
+  let totalPersonas = 0;
+
+  Object.entries(resumen).forEach(([esp, hh])=>{
+    totalPersonas += Math.ceil(hh / 168);
+  });
+
+let html = `
+<div class="card">
+
+<h3 style="text-align:center;margin-bottom:20px;">
+HH/mes por especialidad
+</h3>
+
+<!-- 1. GRÁFICAS PRIMERO -->
+<div style="
+display:flex;
+justify-content:center;
+gap:80px;
+flex-wrap:wrap;
+margin-bottom:40px;
+">
+
+  <div style="text-align:center">
+    <h4>HH requeridas</h4>
+    <canvas id="chartHH_${tipo}"></canvas>
+  </div>
+
+  <div style="text-align:center">
+    <h4>HH disponibles</h4>
+    <canvas id="chartHH_disp_${tipo}"></canvas>
+  </div>
+
+</div>
+
+<!-- 2. TABLA -->
+<div class="zonaBalance_${tipo}"></div>
+
+</div>
+`;
+  contenedor.innerHTML = html;
+  // FORZAR render inmediato
+
+
+}
+function generarGraficoHH(resumen, totalHH, tipo, especialidadesOrden){
+
+  const canvas = document.getElementById(`chartHH_${tipo}`);
+if(!canvas) return;
+
+const ctx = canvas.getContext("2d");
+
+  new Chart(ctx, {
+
+    type: "pie",
+
+    data: {
+      labels: Object.keys(resumen),
+      datasets: [{
+        data: Object.values(resumen),
+        backgroundColor: especialidadesOrden.map((_, i) => coloresBase[i])
+      }]
+    },
+
+    plugins: [ChartDataLabels],
+
+    options: {
+
+      plugins: {
+
+        legend: {
+          position: "right"
+        },
+
+        datalabels: {
+          color: "#fff",
+          font: { weight: "bold" },
+
+          formatter: (value) => {
+            return ((value / totalHH) * 100).toFixed(0) + "%";
+          }
+        }
+      }
+    }
+  });
+}
+// =============================
+
+// USUARIOS GRUEROS
+
+// =============================
+
+
+
+let choiceTecnico;
+let respuestasUsuario = {};
+let choiceCategoria;
+let choiceEspecialidad;
+let currentUser="";
+let competenciasGlobal=[];
+let preguntasGlobal=[];
+let seccionesUnicas=[];
+let seccionActualIdx=0;
+let tareasTecnico = {};
+let progresoTemporal = {};
+let currentRole = null;
+
+async function cargarUsuario() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  currentUser = user.email;
+
+  const { data } = await supabaseClient
+    .from("usuarios")
+    .select("rol")
+    .eq("email", currentUser)
+    .single();
+
+  currentRole = data?.rol;
+
+  aplicarPermisos(); // 👈 IMPORTANTE
+}
+function aplicarPermisos() {
+
+  const menuConsultas = document.getElementById("menuConsultas");
+  const menuTest = document.getElementById("menuTest");
+
+  if (currentRole === "Jefe" || currentRole === "Supervisor") {
+
+    menuConsultas.style.display = "block";
+    menuTest.style.display = "none";
+
+  } else {
+
+    menuConsultas.style.display = "none";
+    menuTest.style.display = "block";
+
+  }
+}
+function ocultarPanelTecnico(){
+  document.getElementById("panelInfoTecnico").style.display = "none";
+  document.getElementById("fotoTecnico").src = "";
+  document.getElementById("datosTecnico").innerHTML = "";
+}
+
+// =============================
+
+// LOGIN
+
+// =============================
+
+document.getElementById("loginBtn").addEventListener("click", async () => {
+
+  const btnText = document.getElementById("loginText");
+  const loader = document.getElementById("loginLoader");
+  const errorBox = document.getElementById("loginError");
+
+  btnText.style.display = "none";
+  loader.style.display = "inline-block";
+  errorBox.textContent = "";
+
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value.trim();
+
+  if (!u || !p) {
+    errorBox.textContent = "Ingrese usuario y contraseña";
+    btnText.style.display = "inline";
+    loader.style.display = "none";
+    return;
+  }
+
+  try {
+
+    const { data, error } = await supabaseClient
+      .from("Usuarios")
+      .select("*")
+      .eq("Usuario", u)
+      .eq("Contraseña", p)
+      .maybeSingle(); // 🔥 evita crash si no existe
+
+    if (error) {
+      console.error(error);
+      errorBox.textContent = "Error en el servidor";
+      return;
+    }
+
+    if (!data) {
+      errorBox.textContent = "Usuario o contraseña incorrectos";
+      return;
+    }
+
+    // 🔥 LOGIN OK
+    currentUser = data.Usuario;
+
+    const tipo = (data.Tipo || "").toLowerCase();
+
+    document.getElementById("loginScreen").style.display = "none";
+
+    // 🔴 PANEL JEFES
+    if (tipo === "supervisor" || tipo === "jefe") {
+
+      document.getElementById("panelJefes").style.display = "block";
+      document.getElementById("userDisplayJefe").textContent = "Jefe: " + currentUser;
+
+      mostrarSeccionJefe(0);
+
+    } 
+    // 🟢 PANEL USUARIO
+    else {
+
+      document.getElementById("mainPanel").style.display = "block";
+      document.getElementById("userDisplay").textContent = "Usuario: " + currentUser;
+
+      await cargarCompetenciasUsuario(currentUser);
+
+    }
+
+  } catch (err) {
+    console.error(err);
+    errorBox.textContent = "Error inesperado";
+  }
+
+  btnText.style.display = "inline";
+  loader.style.display = "none";
+
+});
+
+ 
+
+// =============================
+
+// LOGOUT
+
+// =============================
+
+document.getElementById("logoutBtnUser").addEventListener("click", ()=> location.reload());
+
+document.getElementById("logoutBtnJefe").addEventListener("click", ()=> location.reload());
+
+ 
+
+// =============================
+
+// FUNCIONES DE USUARIO
+
+// =============================
+
+async function cargarCompetenciasUsuario(usuario){
+
+  // 🔴 CODIGOS A OCULTAR
+  const codigosOcultos = [
+    "MNG-087","MNG-105","MNG-106","MNG-110","MNG-111",
+    "MNG-114","MNG-115","MNG-119","MNG-120","MNG-007",
+    "MNG-008","MNG-013","MNG-029","MNG-049","MNG-059",
+    "MNG-145","MNG-146","MNG-147","MNG-148","MNG-149",
+    "MNG-150","MNG-157","MNG-133","MNG-197","MNG-217",
+    "MNG-188","MNG-191","MNG-193"
+  ];
+
+  // 1. TRAER COMPETENCIAS DEL USUARIO
+  const { data: competencias, error } = await supabaseClient
+    .from("PTACTUAL")
+    .select("*")
+    .eq(usuario, 1);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (!competencias || competencias.length === 0) {
+    document.getElementById("componentesUsuario").innerHTML =
+      "<div class='card'>No tiene competencias asignadas.</div>";
+    return;
+  }
+
+  // 2. CONSTRUIR CODIGOS LIMPIOS
+  let codigos = [];
+
+  competencias.forEach(c => {
+
+    const raw = c["Codigo RH"];
+    if (!raw) return;
+
+    raw
+      .toString()
+      .split(/[\s,]+/)
+      .map(x => x.trim())
+      .filter(x => x !== "")
+      .forEach(x => codigos.push(x));
+
+  });
+
+  // 🔥 eliminar duplicados
+  codigos = [...new Set(codigos.filter(c => c && c.length > 0))];
+
+  // 🔥 FILTRO PRINCIPAL (AQUI OCULTAS LOS CODIGOS)
+  codigos = codigos.filter(c => !codigosOcultos.includes(c));
+
+  console.log("CODIGOS FILTRADOS:", codigos);
+
+  // 3. CONSULTA A TEST_VAL
+  let preguntas = [];
+
+  if (codigos.length > 0) {
+
+    const { data, error: errPreg } = await supabaseClient
+      .from("Test_val")
+      .select("*")
+      .in("Codigo", codigos);
+
+    if (errPreg) {
+      console.error(errPreg);
+      return;
+    }
+
+    preguntas = data || [];
+  }
+
+  console.log("PREGUNTAS BD:", preguntas.length);
+
+  // 4. FILTRO EXTRA DE SEGURIDAD
+  preguntas = preguntas.filter(p => 
+    codigos.includes(p.Codigo) &&
+    !codigosOcultos.includes(p.Codigo)
+  );
+
+  // 5. GUARDAR GLOBAL
+  competenciasGlobal = competencias;
+  preguntasGlobal = preguntas;
+
+  // 6. SECCIONES (SIN COMPONENTES VACÍOS)
+  seccionesUnicas = [...new Set(
+    competencias
+      .filter(c => {
+        const raw = c["Codigo RH"];
+        if (!raw) return false;
+
+        const lista = raw.toString().split(/[\s,]+/);
+        return lista.some(cod => !codigosOcultos.includes(cod));
+      })
+      .map(c =>
+        (c["Componente"] || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\u00A0/g, " ")
+          .trim()
+          .toUpperCase()
+      )
+  )];
+
+  // 7. RENDER
+  mostrarNavegacion();
+  mostrarSeccion(0);
+}
+
+ function guardarSeccion(){
+
+  const inputs = document.querySelectorAll("#componentesUsuario input");
+
+  let respuestas = [];
+  let completas = true;
+
+  inputs.forEach((input)=>{
+    const valor = input.value.trim();
+
+    if(valor === ""){
+      completas = false;
+    }
+
+    respuestas.push(valor);
+  });
+
+  if(!completas){
+    alert("Debe responder todas las preguntas");
+    return;
+  }
+
+  respuestasUsuario[seccionActualIdx] = respuestas;
+
+  // 🔥 GUARDAR EN NAVEGADOR
+  localStorage.setItem("examen_"+currentUser, JSON.stringify(respuestasUsuario));
+
+  alert("Sección guardada ✅");
+
+  actualizarProgresoReal();
+  mostrarNavegacion(); // 🔥 refresca colores
+  delete progresoTemporal[seccionActualIdx];
+}
+
+
+function actualizarProgresoReal(){
+
+  const total = seccionesUnicas.length;
+  const completadas = Object.keys(respuestasUsuario).length;
+
+  const progreso = (completadas / total) * 100;
+
+  document.getElementById("progressBar").style.width = progreso + "%";
+  document.getElementById("progresoTexto").textContent =
+    Math.round(progreso) + "% completado";
+}
+function siguienteSeccion(){
+
+  if(!respuestasUsuario[seccionActualIdx]){
+    alert("Primero debes guardar esta sección");
+    return;
+  }
+
+  if(seccionActualIdx < seccionesUnicas.length - 1){
+    seccionActualIdx++;
+    actualizar();
+  } else {
+
+    // 🔥 AQUÍ TERMINA EL EXAMEN
+    const confirmar = confirm("¿Desea finalizar y enviar el examen?");
+
+    if(confirmar){
+      enviarResultadosFinales();
+    }
+
+  }
+}
+function mostrarNavegacion(){
+
+  const nav=document.getElementById("seccionesNav");
+  nav.innerHTML="";
+
+  seccionesUnicas.forEach((sec,i)=>{
+
+    const btn=document.createElement("button");
+    btn.textContent=sec;
+    btn.className="seccionBtn";
+
+    // 🔥 ESTADOS
+    if(respuestasUsuario[i]){
+      btn.style.background = "#16a34a"; // 🟢 completo
+    } 
+    else if(progresoTemporal[i]){
+      btn.style.background = "#f59e0b"; // 🟡 en proceso
+    }
+    else{
+      btn.style.background = "#f87171"; // 🔴 pendiente
+    }
+
+    // 🔵 sección actual
+    if(i===seccionActualIdx){
+      btn.classList.add("active");
+    }
+
+    btn.onclick=()=>{
+      seccionActualIdx=i;
+      actualizar();
+    };
+
+    nav.appendChild(btn);
+
+  });
+
+}
+function marcarEnProceso(idx){
+  progresoTemporal[idx] = true;
+  mostrarNavegacion(); // 🔥 refresca colores en vivo
+}
+ 
+
+function actualizar(){
+
+  document.querySelectorAll(".seccionBtn").forEach((b,i)=>b.classList.toggle("active",i===seccionActualIdx));
+
+  mostrarSeccion(seccionActualIdx);
+
+}
+function corregirTexto(texto){
+  if(!texto) return "";
+
+  return texto
+    .replace(/Ã¡/g, "á")
+    .replace(/Ã©/g, "é")
+    .replace(/Ã­/g, "í")
+    .replace(/Ã³/g, "ó")
+    .replace(/Ãº/g, "ú")
+    .replace(/Ã±/g, "ñ")
+    .replace(/Â/g, "")
+    .replace(/\s+/g, " ") // normaliza espacios
+    .trim();
+}
+
+function mostrarSeccion(idx){
+
+  const cont = document.getElementById("componentesUsuario");
+  cont.innerHTML = "";
+
+  const sec = seccionesUnicas[idx];
+
+  // 🔹 FILTRAR TAREAS DEL COMPONENTE
+  const tareas = competenciasGlobal.filter(c => 
+    (c["Componente"] || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\u00A0/g, " ")
+      .trim()
+      .toUpperCase() === sec
+  );
+
+  // 🔹 SOLO TAREAS QUE EL USUARIO REALIZA
+  const tareasCon1 = tareas.filter(t => Number(t[currentUser]) === 1);
+
+  // 🔹 CONTENEDOR PRINCIPAL
+  const card = document.createElement("div");
+  card.className = "card";
+
+  let html = `
+    <strong>Componente:</strong> ${sec}<br><br>
+
+    <div style="
+      background:#f3f4f6;
+      padding:10px;
+      border-radius:8px;
+      margin-bottom:15px;
+      text-align:center;
+      font-weight:600;
+    ">
+      <div>Total de tareas que realiza: ${calcularTotalGeneral()}</div>
+    </div>
+  `;
+
+  let contadorPregunta = 0;
+
+  // 🔥 RECORRER TAREAS
+  tareasCon1.forEach(tarea => {
+
+    const descripcionTarea =
+      tarea.Descripcion ||
+      tarea["Descripcion de Tarea"] ||
+      "Sin nombre";
+
+    // 🔹 OBTENER CODIGOS DE LA TAREA
+    const codigosTarea = (tarea["Codigo RH"] || "")
+      .split(/[\s,]+/)
+      .map(c => c.trim().toUpperCase())
+      .filter(c => c !== "");
+
+    if(codigosTarea.length === 0) return;
+
+    // 🔥 FILTRAR PREGUNTAS SOLO DE ESTA TAREA
+    let preguntasDeTarea = preguntasGlobal.filter(p => 
+      codigosTarea.includes((p["Codigo"] || "").trim().toUpperCase())
+    );
+
+    if(preguntasDeTarea.length === 0) return;
+
+    // 🔹 ORDENAR POR CODIGO (OPCIONAL PERO RECOMENDADO)
+    preguntasDeTarea.sort((a,b)=>
+      (a.Codigo || "").localeCompare(b.Codigo || "")
+    );
+
+    // 🔹 BLOQUE DE TAREA
+    html += `
+      <div class="bloqueTarea">
+        <div class="tituloTarea">
+          🔧 ${descripcionTarea}
+        </div>
+      </div>
+    `;
+
+    // 🔥 RECORRER PREGUNTAS DE ESA TAREA
+    preguntasDeTarea.forEach(p => {
+
+      const textoPregunta =
+        p.Preguntas ||
+        p.pregunta ||
+        p.Descripcion ||
+        "";
+
+      // 🔹 ASEGURAR ESTRUCTURA
+      if(!respuestasUsuario[idx]){
+        respuestasUsuario[idx] = [];
+      }
+
+      if(!respuestasUsuario[idx][contadorPregunta]){
+        respuestasUsuario[idx][contadorPregunta] = {
+          pregunta: textoPregunta,
+          respuesta: ""
+        };
+      }
+
+      html += `
+        <div class="preguntaItem">
+          
+          <div class="preguntaTexto">
+            <span class="numero">${contadorPregunta + 1}.</span>
+            ${corregirTexto(textoPregunta)}
+          </div>
+
+          <div class="inputCodigo">
+            <input 
+              type="text" 
+              value="${respuestasUsuario[idx]?.[contadorPregunta]?.respuesta || ""}"
+              oninput="guardarRespuesta(${idx}, ${contadorPregunta}, \`${textoPregunta}\`, this.value); marcarEnProceso(${idx})"
+            >
+            <span class="codigoMarca">${p["Codigo"]}</span>
+          </div>
+
+        </div>
+      `;
+
+      contadorPregunta++;
+
+    });
+
+  });
+
+  // 🔹 BOTONES
+  html += `
+    <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+
+      <button onclick="guardarSeccion()" style="
+        padding:10px 18px;
+        background:#1f2937;
+        color:white;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+        font-weight:600;
+      ">
+        Guardar
+      </button>
+
+      <button onclick="siguienteSeccion()" style="
+        padding:10px 18px;
+        background:#374151;
+        color:white;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+        font-weight:600;
+      ">
+        Siguiente
+      </button>
+
+    </div>
+  `;
+
+  card.innerHTML = html;
+  cont.appendChild(card);
+
+  actualizarProgreso();
+}
+
+ function calcularTotalGeneral(){
+
+  const tareasUnicas = new Set();
+
+  competenciasGlobal.forEach(t => {
+    if(Number(t[currentUser]) === 1){
+      const nombre = t.Descripcion || t["Descripcion de Tarea"] || "";
+      if(nombre) tareasUnicas.add(nombre);
+    }
+  });
+
+  return tareasUnicas.size;
+}
+
+function actualizarProgreso(){
+
+  const total=seccionesUnicas.length;
+
+  const progresoBase=(seccionActualIdx/total)*100;
+
+  const inputs=document.querySelectorAll("#componentesUsuario input[type=text]");
+
+  let llenos=0; inputs.forEach(i=>{ if(i.value.trim()!=="") llenos++; });
+
+  const progresoInputs=(inputs.length>0)?(llenos/inputs.length)*(100/total):0;
+
+  const totalProg=progresoBase+progresoInputs;
+
+  document.getElementById("progressBar").style.width=totalProg+"%";
+
+  document.getElementById("progresoTexto").textContent=Math.round(totalProg)+"% completado";
+
+}
+
+// =============================
+
+// FUNCIONES PANEL JEFES
+
+// =============================
+
+ 
+// limpiar selects si existen
+if (choiceTecnico) {
+  choiceTecnico.destroy();
+  choiceTecnico = null;
+}
+if (!choiceTecnico) {
+  choiceTecnico = new Choices("#selectFiltroPlan", {
+    searchEnabled:true,
+    itemSelectText:"",
+    shouldSort:false
+  });
+}
+function mostrarSeccionJefe(idx){
+ocultarPanelTecnico(); // 🔥 SIEMPRE LIMPIA
+  const cont = document.getElementById("contenidoJefe");
+
+if(idx===3){
+
+  // 🔥 OCULTAR PANEL DERECHO
+  document.getElementById("panelInfoTecnico").style.display = "none";
+  document.getElementById("fotoTecnico").src = "";
+  document.getElementById("datosTecnico").innerHTML = "";
+
+ 
+    let contenido = `
+
+    <div class="tabsPro">
+
+      <div class="tabSlider"></div>
+
+      <button class="tabItem active" onclick="cambiarTabHH(this,0)">
+        STS
+      </button>
+
+      <button class="tabItem" onclick="cambiarTabHH(this,1)">
+        RTG
+      </button>
+
+    </div>
+
+    <br>
+
+    <div id="hhSTS">
+      <h3>Análisis Horas Hombre STS</h3>
+      <div id="resultadoHH_STS">Cargando...</div>
+    </div>
+
+    <div id="hhRTG" style="display:none;">
+      <h3>Análisis Horas Hombre RTG</h3>
+      <div id="resultadoHH_RTG">Cargando...</div>
+    </div>
+
+    `;
+
+    cont.innerHTML = contenido;
+
+   setTimeout(()=>{
+  cargarHorasHombre("STS");
+  //cargarHorasHombre("RTG");
+
+
+
+},100);
+
+    return; // 🔥 CLAVE
+  }
+  // LIMPIAR PANEL DERECHO
+  document.getElementById("panelInfoTecnico").style.display = "none";
+  document.getElementById("fotoTecnico").src = "";
+  document.getElementById("datosTecnico").innerHTML = "";
+
+  document.querySelectorAll(".jefeBtn")
+    .forEach((b,i)=>b.classList.toggle("active",i===idx));
+
+
+
+  let contenido="";
+
+ 
+
+ if(idx===0){
+
+  contenido = `
+
+<div class="tabsPro">
+
+<div class="tabSlider"></div>
+
+<button class="tabItem active" onclick="cambiarTab(this,0)">
+👤 Por Nombre
+</button>
+
+<button class="tabItem" onclick="cambiarTab(this,1)">
+🔧 Por Componente
+</button>
+
+</div>
+
+
+<div id="consultaNombre">
+
+<div class="filtrosPT">
+
+<div class="filtroItem">
+<label>Gruero</label>
+<select id="selectFiltroPlan"></select>
+</div>
+
+<div class="filtroItem">
+<label>Especialidad</label>
+<select id="selectEspecialidadPT"></select>
+</div>
+
+<div class="filtroItem">
+<label>Categoría</label>
+<select id="selectCategoriaPT">
+<option value="">Todas</option>
+<option value="A">A</option>
+<option value="B">B</option>
+<option value="C">C</option>
+</select>
+</div>
+
+</div>
+
+<br>
+
+<div id="resultadoPuntajeTecnico">
+  <p style="text-align:center;color:#6b7280;">
+    Seleccione un técnico para ver información
+  </p>
+</div>
+
+</div>
+
+<div id="consultaComponente" style="display:none;">
+
+<div class="filtrosPT">
+
+<div class="filtroItem">
+<label>Tipo de grúa</label>
+<select id="selectTipoGrua">
+<option value="">Todas</option>
+<option value="RTG">RTG</option>
+<option value="STS">STS</option>
+</select>
+</div>
+
+<div class="filtroItem">
+<label>Componente</label>
+<select id="selectComponentePT">
+<option value="">Seleccione...</option>
+</select>
+</div>
+
+</div>
+
+<br>
+
+<div id="resultadoComponente"></div>
+
+</div>
+
+`;
+
+ async function cargarEspecialidades(){
+
+  const select = document.getElementById("selectEspecialidadPT");
+
+  const { data, error } = await supabaseClient
+    .from("PTACTUAL")
+    .select("Especialidad");
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  const especialidadesUnicas = [...new Set(
+    data.map(d => d.Especialidad).filter(e => e)
+  )];
+
+  select.innerHTML = "<option value=''>Todas</option>";
+
+  especialidadesUnicas.forEach(esp=>{
+    const option = document.createElement("option");
+    option.value = esp;
+    option.textContent = esp;
+    select.appendChild(option);
+  });
+
+  new Choices("#selectEspecialidadPT",{
+    searchEnabled:true,
+    itemSelectText:"",
+    shouldSort:false
+  });
+
+}
+
+  setTimeout(()=>{
+
+    cargarTecnicosPuntaje();
+    cargarComponentes();
+    cargarEspecialidades();
+
+
+    document.getElementById("selectComponentePT")
+    .addEventListener("change", buscarPorComponente);
+    document.getElementById("selectTipoGrua")
+    .addEventListener("change", cargarComponentes);
+
+    document.getElementById("selectCategoriaPT")
+
+  .addEventListener("change", buscarPuntajeTecnico);
+
+   new Choices("#selectCategoriaPT", {
+  searchEnabled:true,
+  itemSelectText:""
+  });
+
+  },100);
+
+}
+
+// =============================
+
+// CARGAR NOMBRES EN COMBO
+
+// =============================
+
+async function cargarPersonalCombo(){
+
+ 
+
+  const select = document.getElementById("selectPersonal");
+
+ 
+
+  const { data, error } = await supabaseClient
+
+    .from("Responsabilidades") // ⚠ verifica nombre exacto
+
+    .select("Personal")
+
+    .order("Personal", { ascending: true });
+
+ 
+
+  if(error){
+
+    console.error(error);
+
+    select.innerHTML = "<option>Error al cargar</option>";
+
+    return;
+
+  }
+
+ 
+
+  // eliminar duplicados
+
+  const nombresUnicos = [...new Set(data.map(d => d.Personal))];
+
+ 
+
+  select.innerHTML = "<option value=''>Seleccione...</option>";
+
+ 
+
+  nombresUnicos.forEach(nombre=>{
+
+    const option = document.createElement("option");
+
+    option.value = nombre;
+
+    option.textContent = nombre;
+
+    select.appendChild(option);
+
+  });
+
+ 
+
+select.onchange = function(){
+
+  const actividadSelect = document.getElementById("selectActividad");
+
+  // 🔥 limpiar actividad
+  if(actividadSelect){
+    actividadSelect.value = "";
+  }
+
+  buscarResponsabilidades();
+};
+
+}
+
+if(idx===1){
+
+  contenido=`
+
+    <div class="card">
+
+      <h3>Consultas de responsabilidades</h3>
+
+      <br>
+
+ 
+
+      <label><strong>Consultar por gruero:</strong></label>
+
+      <select id="selectPersonal">
+
+        <option value="">Cargando...</option>
+
+      </select>
+
+ 
+
+      <br><br>
+
+ 
+
+      <label><strong>Consultar por componente:</strong></label>
+
+      <select id="selectActividad">
+
+        <option value="">Cargando...</option>
+
+      </select>
+
+ 
+
+      <br><br>
+
+ 
+
+      <div id="resultadoResponsabilidades"></div>
+
+    </div>
+
+  `;
+
+ 
+
+  setTimeout(()=>{
+
+    cargarPersonalCombo();
+    
+
+    // =============================
+// CARGAR ACTIVIDADES EN COMBO
+
+// =============================
+
+async function cargarActividadesCombo(){
+
+ 
+
+  const select = document.getElementById("selectActividad");
+
+ 
+
+  const { data, error } = await supabaseClient
+
+    .from("Responsabilidades")
+
+    .select("Responsabilidad_1, Responsabilidad_2");
+
+ 
+
+  if(error){
+
+    console.error(error);
+
+    select.innerHTML = "<option>Error</option>";
+
+    return;
+
+  }
+
+ 
+
+  let actividades = [];
+
+ 
+
+  data.forEach(row=>{
+
+    if(row["Responsabilidad_1"])
+
+      actividades.push(row["Responsabilidad_1"].trim());
+
+ 
+
+    if(row["Responsabilidad_2"])
+
+      actividades.push(row["Responsabilidad_2"].trim());
+
+  });
+
+ 
+
+  // 🔥 quitar duplicados
+
+  const actividadesUnicas = [...new Set(actividades)].sort();
+
+ 
+
+  select.innerHTML = "<option value=''>Seleccione...</option>";
+
+ 
+
+  actividadesUnicas.forEach(act=>{
+
+    const option = document.createElement("option");
+
+    option.value = act;
+
+    option.textContent = act;
+
+    select.appendChild(option);
+
+  });
+
+ 
+
+select.addEventListener("change", function(){
+
+  const personalSelect = document.getElementById("selectPersonal");
+
+  // 🔥 limpiar gruero
+  if(personalSelect){
+    personalSelect.value = "";
+  }
+
+  buscarPorActividad();
+});
+
+}
+
+    cargarActividadesCombo();
+
+  },100);
+
+}
+
+// =============================
+
+// BUSCAR POR ACTIVIDAD (VERSIÓN ESTABLE)
+
+// =============================
+
+async function buscarPorActividad(){
+
+ 
+ocultarPanelTecnico(); // 🔥 SIEMPRE OCULTA
+  const actividad = document.getElementById("selectActividad").value;
+
+  const contenedor = document.getElementById("resultadoResponsabilidades");
+
+ 
+
+if(actividad === ""){
+  contenedor.innerHTML = "";
+  ocultarPanelTecnico(); // 🔥 AQUÍ TAMBIÉN
+  return;
+}
+
+ 
+
+  contenedor.innerHTML = "Cargando...";
+
+ 
+
+  const { data, error } = await supabaseClient
+
+    .from("Responsabilidades") // ⚠ verifica nombre exacto
+
+    .select("Area, Personal, Responsabilidad_1, Responsabilidad_2");
+
+ 
+
+  if(error){
+
+    console.error(error);
+
+    contenedor.innerHTML = "<p>Error al consultar</p>";
+
+    return;
+
+  }
+
+ 
+
+  // 🔎 Filtrar manualmente
+
+  const filtrados = data.filter(row =>
+
+    row["Responsabilidad_1"] === actividad ||
+
+    row["Responsabilidad_2"] === actividad
+
+  );
+
+ 
+
+  if(filtrados.length === 0){
+
+    contenedor.innerHTML = "<p>No se encontraron resultados.</p>";
+
+    return;
+
+  }
+
+ 
+
+  let html = `
+
+    <div class="card">
+
+      <table style="width:100%; border-collapse:collapse;">
+
+        <tr>
+
+          <th style="padding:8px; border:1px solid #ddd;">Área</th>
+
+          <th style="padding:8px; border:1px solid #ddd;">Persona</th>
+
+          <th style="padding:8px; border:1px solid #ddd;">Responsabilidad</th>
+
+        </tr>
+
+  `;
+
+ 
+
+  filtrados.forEach(row=>{
+
+    html += `
+
+      <tr>
+
+        <td style="padding:8px; border:1px solid #ddd;">${row.Area}</td>
+
+        <td style="padding:8px; border:1px solid #ddd;">${row.Personal}</td>
+
+        <td style="padding:8px; border:1px solid #ddd;">${actividad}</td>
+
+      </tr>
+
+    `;
+
+  });
+
+ 
+
+  html += `
+
+      </table>
+
+    </div>
+
+  `;
+
+ 
+
+  contenedor.innerHTML = html;
+
+}
+
+// =============================
+
+// BUSCAR RESPONSABILIDADES + QUIENES LA COMPARTEN
+
+// =============================
+
+async function buscarResponsabilidades(){
+
+ 
+
+  const nombre = document.getElementById("selectPersonal").value;
+if(!nombre || nombre.trim() === ""){
+  ocultarPanelTecnico(); // 🔥 en vez de hacerlo manual
+  document.getElementById("resultadoPuntajeTecnico").innerHTML = "";
+  return;
+}
+
+// ✅ SOLO SI HAY NOMBRE
+document.getElementById("panelInfoTecnico").style.display="block";
+mostrarFotoTecnico(nombre);
+cargarDatosTecnico(nombre);
+
+  const contenedor = document.getElementById("resultadoResponsabilidades");
+
+ 
+
+if(nombre === ""){
+  contenedor.innerHTML = "";
+  ocultarPanelTecnico(); // 🔥 AQUÍ
+  return;
+}
+
+ 
+
+  contenedor.innerHTML = "Cargando...";
+
+ 
+
+  const { data, error } = await supabaseClient
+
+    .from("Responsabilidades") // ⚠ verifica nombre exacto
+
+    .select("*")
+
+    .eq("Personal", nombre);
+
+ 
+
+  if(error){
+
+    console.error(error);
+
+    contenedor.innerHTML = "<p style='color:red;'>Error al consultar</p>";
+
+    return;
+
+  }
+
+ 
+
+  if(!data || data.length === 0){
+
+    contenedor.innerHTML = "<p>No se encontraron resultados.</p>";
+
+    return;
+
+  }
+
+ 
+
+  let html = "";
+
+ 
+
+  for(const row of data){
+
+ 
+
+    // 🔹 TABLA PRINCIPAL (igual estilo anterior, sin colores)
+
+    html += `
+
+      <div class="card">
+
+        <table style="width:100%; border-collapse:collapse;">
+
+          <tr>
+
+            <th style="padding:8px; border:1px solid #ddd;">Área</th>
+
+            <th style="padding:8px; border:1px solid #ddd;">Puesto</th>
+
+            <th style="padding:8px; border:1px solid #ddd;">Responsabilidad 1</th>
+
+            <th style="padding:8px; border:1px solid #ddd;">Responsabilidad 2</th>
+
+           
+
+          </tr>
+
+          <tr>
+
+            <td style="padding:8px; border:1px solid #ddd;">${row.Area || ""}</td>
+
+            <td style="padding:8px; border:1px solid #ddd;">${row.Puesto || ""}</td>
+
+            <td style="padding:8px; border:1px solid #ddd;">${row["Responsabilidad_1"] || ""}</td>
+
+            <td style="padding:8px; border:1px solid #ddd;">${row["Responsabilidad_2"] || ""}</td>
+
+           
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    `;
+
+ 
+
+    // 🔎 Buscar quienes comparten Responsabilidad 1
+
+    const { data: comp1 } = await supabaseClient
+
+      .from("Responsabilidades")
+
+      .select("Area, Personal")
+
+      .eq("Responsabilidad_1", row["Responsabilidad_1"])
+
+      .neq("Personal", nombre);
+
+ 
+
+    // 🔎 Buscar quienes comparten Responsabilidad 2
+
+    const { data: comp2 } = await supabaseClient
+
+      .from("Responsabilidades")
+
+      .select("Area, Personal")
+
+      .eq("Responsabilidad_2", row["Responsabilidad_2"])
+
+      .neq("Personal", nombre);
+
+ 
+
+    // 🔹 TABLA DE COMPARTEN RESPONSABILIDAD
+
+    html += `<div class="card"><h4>Comparten responsabilidad</h4>`;
+
+ 
+
+    if((comp1 && comp1.length > 0) || (comp2 && comp2.length > 0)){
+
+ 
+
+      html += `
+
+        <table style="width:100%; border-collapse:collapse;">
+
+          <tr>
+
+            <th style="padding:8px; border:1px solid #ddd;">Área</th>
+
+            <th style="padding:8px; border:1px solid #ddd;">Personal</th>
+
+            <th style="padding:8px; border:1px solid #ddd;">Actividad</th>
+
+          </tr>
+
+      `;
+
+ 
+
+      if(comp1 && comp1.length > 0){
+
+        comp1.forEach(p=>{
+
+          html += `
+
+            <tr>
+
+              <td style="padding:8px; border:1px solid #ddd;">${p.Area}</td>
+
+              <td style="padding:8px; border:1px solid #ddd;">${p.Personal}</td>
+
+              <td style="padding:8px; border:1px solid #ddd;">${row["Responsabilidad_1"]}</td>
+
+            </tr>
+
+          `;
+
+        });
+
+      }
+
+ 
+
+      if(comp2 && comp2.length > 0){
+
+        comp2.forEach(p=>{
+
+          html += `
+
+            <tr>
+
+              <td style="padding:8px; border:1px solid #ddd;">${p.Area}</td>
+
+              <td style="padding:8px; border:1px solid #ddd;">${p.Personal}</td>
+
+              <td style="padding:8px; border:1px solid #ddd;">${row["Responsabilidad_2"]}</td>
+
+            </tr>
+
+          `;
+
+        });
+
+      }
+
+ 
+
+      html += `</table>`;
+
+ 
+
+    } else {
+
+      html += `<p>No comparte responsabilidades con otros técnicos.</p>`;
+
+    }
+
+ 
+
+    html += `</div>`;
+
+  }
+
+ 
+
+  contenedor.innerHTML = html;
+
+}
+
+function mostrarFotoTecnico(nombre){
+
+  const img = document.getElementById("fotoTecnico");
+
+  if(!nombre){
+    img.src = "";
+    return;
+  }
+
+  const nombreArchivo = nombre
+    .replaceAll(" ", "_")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  img.src = "https://gogalvnmpntvjtiunowz.supabase.co/storage/v1/object/public/Fotos/" 
+            + nombreArchivo + ".png";
+
+}
+
+// =============================
+
+// CARGAR TECNICOS DESDE TABLA PUNTAJE
+
+// =============================
+
+async function cargarTecnicosPuntaje(){
+
+ 
+
+  const select = document.getElementById("selectFiltroPlan");
+
+ 
+
+  const { data, error } = await supabaseClient
+
+    .from("PTACTUAL")
+
+    .select("*")
+
+ 
+
+  if(error){
+
+    console.error(error);
+
+    select.innerHTML = "<option>Error al cargar</option>";
+
+    return;
+
+  }
+
+ 
+
+  if(!data || data.length === 0){
+
+    select.innerHTML = "<option>No hay datos</option>";
+
+    return;
+
+  }
+
+ 
+
+  // 🔥 Obtener nombres de columnas
+
+  const columnas = Object.keys(data[0]);
+
+ 
+
+  // ❌ Excluir columnas que NO son personas
+
+  const excluir = [
+
+    "id",
+
+    "Categoria",
+
+    "Puntaje de actividad",
+
+    "Especialidad",
+
+    "Descripcion",
+
+    "Descripcion de Tarea",
+
+    "Componente",
+
+    "Codigo RH",
+
+    "created_at"
+
+  ];
+
+ 
+
+  const nombres = columnas.filter(col => !excluir.includes(col));
+
+ 
+
+  select.innerHTML = "<option value=''>Seleccione...</option>";
+
+ 
+
+  nombres.forEach(nombre=>{
+
+    const option = document.createElement("option");
+
+    option.value = nombre;
+
+    option.textContent = nombre;
+
+    select.appendChild(option);
+
+  });
+
+ 
+
+select.addEventListener("change", function(){
+
+  const nombre = this.value;
+
+  if(!nombre || nombre.trim() === ""){
+    
+    // 🔴 OCULTAR TODO
+    document.getElementById("panelInfoTecnico").style.display="none";
+
+    // 🔴 LIMPIAR TODO
+    document.getElementById("datosTecnico").innerHTML = "";
+    document.getElementById("fotoTecnico").src = "";
+    document.getElementById("resultadoPuntajeTecnico").innerHTML = "";
+
+    return;
+  }
+
+  // ✅ SOLO SI HAY NOMBRE REAL
+  document.getElementById("panelInfoTecnico").style.display="block";
+
+  buscarPuntajeTecnico();
+  mostrarFotoTecnico(nombre);
+  cargarDatosTecnico(nombre);
+
+});
+if (choiceTecnico) {
+  choiceTecnico.destroy();
+}
+choiceTecnico = new Choices("#selectFiltroPlan", {
+  searchEnabled:true,
+  itemSelectText:"",
+  shouldSort:false
+});
+}
+
+// =============================
+
+// CARGAR DATOS PERSONALES
+
+// =============================
+
+ 
+
+async function cargarDatosTecnico(nombre){
+
+ 
+
+  const cont = document.getElementById("datosTecnico");
+
+ 
+
+ if(!nombre || nombre.trim() === ""){
+  cont.innerHTML = "";
+  return;
+}
+
+ 
+
+  cont.innerHTML="Cargando datos...";
+
+ 
+
+  const { data, error } = await supabaseClient
+
+    .from("Datos_personales")
+
+    .select("*")
+
+    .ilike("NOMBRE", `%${nombre}%`);
+
+ 
+
+  if(error){
+
+    console.error("ERROR SUPABASE:", error);
+
+    cont.innerHTML="<p>Error al cargar datos</p>";
+
+    return;
+
+  }
+
+ 
+
+  if(!data || data.length === 0){
+
+    cont.innerHTML="<p>No hay información disponible</p>";
+
+    return;
+
+  }
+
+ 
+
+  const d = data[0];
+
+ 
+
+  cont.innerHTML = `
+
+    <div style="font-size:14px;">
+
+      <strong>Nombre:</strong><br>${d.NOMBRE || ""}<br><br>
+
+ 
+
+      <strong>Número de empleado:</strong><br>
+
+      ${d["NUMERO DE EMPLEADO"] || ""}<br><br>
+
+ 
+
+      <strong>Puesto:</strong><br>${d.PUESTO || ""}<br><br>
+
+ 
+
+      <strong>Área de grúas:</strong><br>
+
+      ${d["AREA DE GRUAS"] || ""}<br><br>
+
+ 
+
+      <strong>Fecha de ingreso:</strong><br>
+
+      ${d["FECHA DE INGRESO"] || ""}
+
+    </div>
+
+  `;
+
+}
+
+// =============================
+
+// BUSCAR PUNTAJE TECNICO
+
+// =============================
+
+async function buscarPuntajeTecnico(){
+
+ 
+
+  const tecnicoFiltro = document.getElementById("selectFiltroPlan").value;
+
+  const especialidad = document.getElementById("selectEspecialidadPT").value;
+
+  const contenedor = document.getElementById("resultadoPuntajeTecnico");
+
+  const categoria = document.getElementById("selectCategoriaPT").value;
+
+ 
+
+if(tecnicoFiltro === ""){
+
+    contenedor.innerHTML = "";
+
+    return;
+
+  }
+
+ 
+
+  contenedor.innerHTML = "Cargando...";
+
+ 
+
+let query = supabaseClient
+
+  .from("PTACTUAL")
+
+  .select("*")
+
+  .eq(tecnicoFiltro, 1);
+
+ 
+
+if(especialidad !== ""){
+
+  query = query.eq("Especialidad", especialidad);
+
+}
+
+ 
+
+if(categoria !== ""){
+
+  query = query.eq("Categoria", categoria);
+
+}
+
+ 
+
+const { data, error } = await query;
+
+ 
+
+  if(error){
+
+    console.error(error);
+
+    contenedor.innerHTML = "<p style='color:red;'>Error al consultar</p>";
+
+    return;
+
+  }
+
+ 
+
+  if(!data || data.length === 0){
+
+    contenedor.innerHTML = "<p>No tiene competencias asignadas.</p>";
+
+    return;
+
+  }
+
+ 
+
+  let html = `
+
+<div class="card">
+
+<table style="width:100%; border-collapse:collapse; font-size:14px;">
+
+<thead style="background:#f3f4f6;">
+
+<tr>
+
+<th style="padding:10px; border:1px solid #ddd;">Categoría</th>
+
+<th style="padding:10px; border:1px solid #ddd;">Especialidad</th>
+
+<th style="padding:10px; border:1px solid #ddd;">Descripción</th>
+
+<th style="padding:10px; border:1px solid #ddd;">Componente</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+`;
+
+ 
+
+  data.forEach(row=>{
+
+    html += `
+
+      <tr>
+
+        <td style="padding:8px; border:1px solid #ddd;">${row.Categoria || ""}</td>
+
+        <td style="padding:8px; border:1px solid #ddd;">${row.Especialidad || ""}</td>
+
+        <td style="padding:8px; border:1px solid #ddd;">
+
+  ${row.Descripcion || row["Descripcion de Tarea"] || ""}
+
+</td>
+
+        <td style="padding:8px; border:1px solid #ddd;">${row.Componente || ""}</td>
+
+      </tr>
+
+    `;
+
+  });
+
+ 
+
+  html += `
+
+      </table>
+
+    </div>
+
+  `;
+
+ 
+
+  contenedor.innerHTML = html;
+
+}
+
+if(idx===2){
+
+  contenido=`
+
+  <div class="card">
+
+    <h3>Resultados Test Teórico</h3>
+    <p id="contadorTareasTest"
+   style="text-align:center;font-weight:600;color:#374151;">
+  Total de tareas: 0
+</p>
+</p>
+    <br>
+
+    <label><strong>Seleccionar técnico:</strong></label>
+    <select id="selectResultadosTest">
+      <option value="">Cargando...</option>
+    </select>
+
+    <br><br>
+
+    <div id="resultadoTest"></div>
+    
+  </div>
+
+  `;
+
+setTimeout(()=>{
+  cargarUsuariosTest();
+  contarTareasTest();
+},100);
+
+}
+
+ 
+
+  cont.innerHTML=contenido;
+
+}
+async function cargarUsuariosTest(){
+
+  const select = document.getElementById("selectResultadosTest");
+
+  const { data, error } = await supabaseClient
+    .from("resultados_test_tecnico")
+    .select("usuario");
+
+  if(error){
+    console.error(error);
+    select.innerHTML = "<option>Error</option>";
+    return;
+  }
+
+  if(!data || data.length === 0){
+    select.innerHTML = "<option>No hay datos</option>";
+    return;
+  }
+
+  // 🔥 quitar duplicados
+  const usuariosUnicos = [...new Set(data.map(d => d.usuario))];
+
+  select.innerHTML = "<option value=''>Seleccione...</option>";
+
+  usuariosUnicos.forEach(u=>{
+    const option = document.createElement("option");
+    option.value = u;
+    option.textContent = u;
+    select.appendChild(option);
+  });
+
+  // evento
+  select.addEventListener("change", mostrarResultadosTest);
+
+}
+async function mostrarResultadosTest(){
+
+  const usuario = document.getElementById("selectResultadosTest").value;
+  const cont = document.getElementById("resultadoTest");
+
+  if(!usuario){
+    cont.innerHTML = "";
+    return;
+  }
+
+  console.log("Usuario seleccionado:", usuario);
+
+  cont.innerHTML = "Cargando...";
+
+  // =============================
+  // 🔥 CONSTANTE MANUAL
+  // =============================
+  const TOTAL_TAREAS_EXISTENTES = 224;
+
+  // 🔥 TRAER ÚLTIMO INTENTO
+  const { data: examenData, error: errorExamen } = await supabaseClient
+    .from("resultados_test_tecnico")
+    .select("fecha")
+    .eq("usuario", usuario)
+    .order("fecha", { ascending: false })
+    .limit(1);
+
+  if(errorExamen){
+    console.error(errorExamen);
+    cont.innerHTML = "Error al cargar examen";
+    return;
+  }
+
+  if(!examenData || examenData.length === 0){
+    cont.innerHTML = "No hay resultados";
+    return;
+  }
+
+  const fechaExamen = examenData[0].fecha;
+
+  // 🔥 RESPUESTAS
+  const { data: respuestasData, error: errorRespuestas } = await supabaseClient
+    .from("resultados_test_tecnico")
+    .select("pregunta, respuesta, fecha")
+    .eq("usuario", usuario)
+    .order("id", { ascending: true });
+
+  if(errorRespuestas){
+    console.error(errorRespuestas);
+    cont.innerHTML = "Error al cargar respuestas";
+    return;
+  }
+
+  if(!respuestasData || respuestasData.length === 0){
+    cont.innerHTML = "No hay respuestas registradas";
+    return;
+  }
+
+  // =============================
+  // 🔥 TRAER PTACTUAL
+  // =============================
+  const { data: tareasBD, error: errTareas } = await supabaseClient
+    .from("PTACTUAL")
+    .select(`"${usuario}", Componente`);
+
+  if(errTareas){
+    console.error("Error tareas:", errTareas);
+    cont.innerHTML = "Error cargando tareas";
+    return;
+  }
+
+  // 🔹 TAREAS QUE REALIZA
+  let tareasRealiza = 0;
+
+  tareasBD.forEach(row=>{
+    if(Number(row[usuario]) === 1){
+      tareasRealiza++;
+    }
+  });
+
+  // 🔹 COMPONENTES QUE REALIZA
+  const compUsuario = tareasBD
+    .filter(r => Number(r[usuario]) === 1)
+    .map(r => r.Componente);
+
+  const componentesUsuario = [...new Set(
+    compUsuario.filter(c => c)
+  )];
+
+  const totalComponentesUsuario = componentesUsuario.length;
+
+  // 🔹 COMPONENTES TOTALES (BD)
+  const { data: allComponentes } = await supabaseClient
+    .from("PTACTUAL")
+    .select("Componente");
+
+  const componentesTotales = [...new Set(
+    allComponentes.map(r => r.Componente).filter(c => c)
+  )];
+
+  const totalComponentes = componentesTotales.length;
+
+  // 🔹 COMPONENTES DEL TEST TEÓRICO (🔥 NUEVO)
+  const componentesTest = [...new Set(
+    (preguntasGlobal || [])
+      .map(p => p.Componente)
+      .filter(c => c)
+  )];
+
+  const totalComponentesTest = componentesTest.length;
+
+  // =============================
+  // 🔥 HTML
+  // =============================
+
+  let html = `
+    <div class="card">
+
+      <h4>Usuario: ${usuario}</h4>
+      <p><strong>Fecha:</strong> ${new Date(fechaExamen).toLocaleString()}</p>
+
+      <div style="
+        margin-top:10px;
+        padding:10px;
+        background:#f3f4f6;
+        border-radius:8px;
+      ">
+        <strong>Total de preguntas:</strong> ${respuestasData.length}
+      </div>
+
+      <!-- 🔥 RESUMEN COMPLETO -->
+      <div style="
+        margin-top:15px;
+        padding:15px;
+        background:#e5e7eb;
+        border-radius:10px;
+        font-size:14px;
+      ">
+        <strong>Total tareas existentes:</strong> ${TOTAL_TAREAS_EXISTENTES}<br>
+        <strong>Tareas completas que realiza:</strong> ${tareasRealiza}<br>
+        <strong>Tareas totales que realiza en test:</strong> ${totalComponentes}<br>
+        <strong>Componentes que realiza en test:</strong> ${totalComponentesUsuario}<br>
+        
+      </div>
+
+      <hr style="margin:15px 0;">
+  `;
+
+  respuestasData.forEach((r, i)=>{
+
+    html += `
+      <div style="
+        background:#f9fafb;
+        padding:12px;
+        border-radius:8px;
+        margin-bottom:10px;
+        border:1px solid #e5e7eb;
+      ">
+
+        <div style="font-weight:600;">
+          ${i+1}. ${r.pregunta || "Sin pregunta"}
+        </div>
+
+        <div style="margin-top:5px;">
+          <strong>Respuesta:</strong> ${r.respuesta || "Sin respuesta"}
+        </div>
+
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+
+  cont.innerHTML = html;
+}
+// Plan de carrera
+
+async function mostrarPlanCarrera(){
+
+
+  const tecnico = document.getElementById("selectFiltroPlan").value;
+
+ 
+
+  if(!tecnico){
+
+    alert("Seleccione un técnico primero");
+
+    return;
+
+  }
+
+ 
+
+  const cont = document.getElementById("contenidoJefe");
+
+ 
+
+  cont.innerHTML = `
+
+ 
+
+  <div class="card">
+
+ 
+
+  <button onclick="mostrarSeccionJefe(0)"
+
+  style="
+
+  margin-bottom:20px;
+
+  padding:8px 14px;
+
+  border:none;
+
+  border-radius:6px;
+
+  background:#374151;
+
+  color:white;
+
+  cursor:pointer;
+
+  ">
+
+  ← Volver
+
+  </button>
+
+ 
+
+  <h2>Plan de carrera - ${tecnico}</h2>
+ <div id="resumenCarrera" style="
+background:#f3f4f6;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+font-size:14px;
+"></div>
+ 
+
+  <br>
+
+ 
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+
+ 
+
+  <div>
+
+    <h3>Cantidad de tareas por categoría</h3>
+
+    <canvas id="chartCategoria"></canvas>
+
+  </div>
+
+ 
+
+  <div>
+
+    <h3>Cantidad de tareas por especialidad</h3>
+
+    <canvas id="chartEspecialidad"></canvas>
+
+  </div>
+
+ 
+
+</div>
+
+ 
+
+<br><br>
+
+<h3 style="margin-top:20px;">
+Actividades faltantes para completar puntaje técnico
+</h3>
+
+  <div style="display:flex; gap:20px; flex-wrap:wrap;">
+
+  <div>
+    <label>Categoría</label><br>
+    <select id="filtroCategoria">
+      <option value="">Todas</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+    </select>
+  </div>
+  <div>
+    <label>Especialidad</label><br>
+    <select id="filtroEspecialidad">
+      <option value="">Todas</option>
+      <option value="Mecanico">Mecanico</option>
+      <option value="Electrico">Electrico</option>
+      <option value="Rigger">Rigger</option>
+      <option value="Soldador">Soldador</option>
+    </select>
+  </div>
+
+</div>
+ <div style="text-align:center; margin-top:10px;">
+  <button onclick="filtrarActividadesManual()" style="
+    padding:8px 14px;
+    background:#1f2937;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+  ">
+    Filtrar
+  </button>
+</div>
+
+<div id="actividadesFaltantes"></div>
+
+ <div id="simuladorPuntos" style="
+margin-top:20px;
+padding:20px;
+background:#f3f4f6;
+border-radius:12px;
+">
+
+<h3 style="margin-bottom:10px;">Simulador de progreso</h3>
+
+<div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+
+<div>
+Puntos actuales<br>
+<strong id="puntosActuales">0</strong>
+</div>
+
+<div>
+Puntos seleccionados<br>
+<strong id="puntosSeleccionados">0</strong>
+</div>
+
+<div>
+Total proyectado<br>
+<strong id="puntosProyectados">0</strong>
+</div>
+
+</div>
+
+<br>
+
+<div style="background:#e5e7eb;border-radius:10px;height:20px;">
+<div id="barraProgresoSimulador" style="
+height:100%;
+width:0%;
+background:#1f2937;
+border-radius:10px;
+transition:0.4s;
+"></div>
+</div>
+
+<br>
+
+<div id="mensajeProgreso" style="
+text-align:center;
+font-weight:600;
+margin-top:10px;
+"></div>
+
+<br>
+
+
+
+</div>
+
+
+
+
+
+
+
+  </div>
+
+ 
+
+  </div>
+
+  `;
+
+ 
+
+const { data, error } = await supabaseClient
+
+  .from("PTACTUAL")
+
+  .select("*");
+let puntosTecnico = 0;
+
+data.forEach(row=>{
+  if(Number(row[tecnico]) === 1){
+    puntosTecnico += Number(row["Puntaje de actividad"] || 0);
+  }
+});
+ 
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+ 
+
+  if(!data || data.length===0){
+
+    cont.innerHTML += "<p>No tiene competencias asignadas.</p>";
+
+    return;
+
+  }
+
+ 
+
+  let categorias = {};
+
+  let especialidades = {};
+
+ function coincideEspecialidad(espBD, espTecnico){
+
+  if(!espBD || !espTecnico) return false;
+
+  espBD = espBD.toUpperCase();
+  espTecnico = espTecnico.toUpperCase();
+
+  const mapa = {
+    "E": ["ELEC"],
+    "M": ["MEC"],
+    "L": ["LIMP"],
+    "R": ["RIG"],
+    "S": ["SOLD", "SOLDADOR"] // 🔥 NUEVO
+  };
+
+  if(mapa[espBD]){
+    return mapa[espBD].some(e => espTecnico.startsWith(e));
+  }
+
+  return false;
+}
+
+  data.forEach(row=>{
+
+ 
+
+    const cat = row.Categoria || "Sin categoria";
+
+    categorias[cat] = (categorias[cat] || 0) + 1;
+
+ 
+
+    const esp = row.Especialidad || "Sin especialidad";
+
+    especialidades[esp] = (especialidades[esp] || 0) + 1;
+
+ 
+
+  });
+
+ 
+
+  crearGrafico("chartCategoria",categorias);
+
+  crearGrafico("chartEspecialidad",especialidades);
+
+ 
+
+  // =============================
+
+// OBTENER CATEGORIA DEL TECNICO
+
+// =============================
+
+ 
+
+const { data: datosTecnico } = await supabaseClient
+
+  .from("Datos_personales")
+
+  .select("PUESTO")
+
+  .ilike("NOMBRE", `%${tecnico}%`)
+
+  .single();
+
+ 
+
+if(!datosTecnico){
+
+  console.log("No se encontró el puesto del técnico");
+
+  return;
+
+}
+
+ 
+
+const puesto = datosTecnico.PUESTO || "";
+
+
+
+// extraer categoria (A B C)
+
+const categoriaTecnico = puesto.match(/[ABC]/)?.[0];
+ // obtener especialidad (primeras letras del puesto)
+const especialidadTecnico = puesto.split(" ")[0]?.toUpperCase();
+ 
+function mapearEspecialidadNombre(esp){
+
+  if(!esp) return "";
+
+  esp = esp.toUpperCase();
+
+  if(esp.startsWith("ELEC")) return "Electrico";
+  if(esp.startsWith("MEC")) return "Mecanico";
+  if(esp.startsWith("RIG")) return "Rigger";
+  if(esp.startsWith("SOLD")) return "Soldador";
+
+  return esp;
+}
+function obtenerEspecialidadDesdePuesto(puesto){
+
+  puesto = puesto.toUpperCase();
+
+  if(puesto.includes("ELEC")) return "Electrico";
+  if(puesto.includes("MEC")) return "Mecanico";
+  if(puesto.includes("RIG")) return "Rigger";
+  if(puesto.includes("SOLD")) return "Soldador";
+
+  return "";
+}
+const especialidadNombre = mapearEspecialidadNombre(especialidadTecnico);
+
+// 🔥 clave final de búsqueda
+const categoriaCompleta = `${especialidadNombre} ${categoriaTecnico}`;
+
+console.log("Buscar en BD:", categoriaCompleta);
+//borre
+
+// 🔥 BUSCAR PUNTOS REQUERIDOS CORRECTAMENTE
+const { data: datosCategoria, error: errorCategoria } = await supabaseClient
+.from("puntaje_categorias")
+.select("*")
+.ilike("categorias", categoriaCompleta)
+.single();
+
+if(errorCategoria){
+  console.error("Error categoria:", errorCategoria);
+}
+
+// 🔥 CALCULOS CORRECTOS
+let puntosRequeridos = Number(datosCategoria?.puntos || 0);
+
+let faltan = puntosRequeridos - puntosTecnico;
+
+if(faltan < 0) faltan = 0;
+
+// =============================
+// 🔼 CALCULAR SIGUIENTE NIVEL
+// =============================
+
+function obtenerSiguienteCategoria(cat){
+
+  if(cat === "C") return "B";
+  if(cat === "B") return "A";
+
+  return null; // A ya es máximo
+}
+
+const siguienteCategoria = obtenerSiguienteCategoria(categoriaTecnico);
+
+let puntosParaSiguiente = 0;
+let faltanParaSiguiente = 0;
+
+if(siguienteCategoria){
+
+  const categoriaSiguienteCompleta = `${especialidadNombre} ${siguienteCategoria}`;
+
+  const { data: datosSiguiente } = await supabaseClient
+    .from("puntaje_categorias")
+    .select("*")
+    .ilike("categorias", categoriaSiguienteCompleta)
+    .single();
+
+  puntosParaSiguiente = Number(datosSiguiente?.puntos || 0);
+
+  faltanParaSiguiente = puntosParaSiguiente - puntosTecnico;
+
+  if(faltanParaSiguiente < 0) faltanParaSiguiente = 0;
+
+}
+
+// 🔥 PROGRESO HACIA SIGUIENTE NIVEL
+let progreso = 0;
+
+if(siguienteCategoria && puntosParaSiguiente > 0){
+
+  progreso = Math.round((puntosTecnico / puntosParaSiguiente) * 100);
+
+  if(progreso > 100) progreso = 100;
+
+} else {
+
+  // si ya está en A
+  progreso = 100;
+
+}
+
+if(progreso > 100) progreso = 100;
+
+document.getElementById("resumenCarrera").innerHTML = `
+
+<strong>Categoria actual:</strong> ${categoriaTecnico}
+<br><br>
+
+<strong>Puntos obtenidos:</strong> ${puntosTecnico}
+<br>
+
+
+${siguienteCategoria ? `
+<hr>
+<strong>Siguiente nivel (${siguienteCategoria}):</strong><br>
+Puntos requeridos: ${puntosParaSiguiente}<br>
+Te faltan: <strong>${faltanParaSiguiente}</strong> puntos
+<br><br>
+` : `<strong>🏆 Nivel máximo alcanzado</strong><br><br>`}
+
+<div style="
+background:#e5e7eb;
+border-radius:10px;
+height:18px;
+width:100%;
+">
+
+<div style="
+width:${progreso}%;
+background:#1f2937;
+height:100%;
+border-radius:10px;
+"></div>
+
+</div>
+
+<br>
+${siguienteCategoria 
+  ? `Avance hacia ${siguienteCategoria}: ${progreso}%`
+  : `Nivel máximo alcanzado`
+}
+`;
+
+ 
+const contActividades = document.getElementById("actividadesFaltantes");
+
+contActividades.innerHTML = `
+  <p style="text-align:center;color:#6b7280;">
+    Seleccione Categoría y/o Especialidad y presione <strong>Filtrar</strong>
+  </p>
+`;
+
+ window.puntosActualesGlobal = puntosTecnico;
+window.puntosRequeridosGlobal = puntosParaSiguiente;
+
+}
+
+function crearGrafico(id, datos){
+
+ 
+
+  const valores = Object.values(datos);
+
+  const total = valores.reduce((a,b)=>a+b,0);
+
+ 
+
+  new Chart(document.getElementById(id),{
+
+ 
+
+    type:"doughnut",
+
+ 
+
+    data:{
+
+      labels:Object.keys(datos),
+
+      datasets:[{
+
+        data:valores,
+
+        backgroundColor:[
+
+          "#4F81BD",
+
+          "#C0504D",
+
+          "#9BBB59",
+
+          "#8064A2",
+
+          "#4BACC6",
+
+          "#F79646"
+
+        ],
+
+        borderWidth:2,
+
+        borderColor:"#ffffff"
+
+      }]
+
+    },
+
+ 
+
+    plugins:[ChartDataLabels],
+
+ 
+
+    options:{
+
+      responsive:true,
+
+ 
+
+      animation:{
+
+        animateRotate:true,
+
+        duration:1500,
+
+        easing:"easeOutBounce"
+
+      },
+
+ 
+
+      plugins:{
+
+        legend:{
+
+          position:"right",
+
+          labels:{
+
+            font:{size:13}
+
+          }
+
+        },
+
+ 
+
+        datalabels:{
+
+          color:"#fff",
+
+          font:{
+
+            weight:"bold",
+
+            size:14
+
+          },
+
+ 
+
+          formatter:(value)=>{
+
+            let porcentaje = (value/total*100).toFixed(1);
+
+            return porcentaje+"%";
+
+          }
+
+        },
+
+ 
+
+        tooltip:{
+
+          callbacks:{
+
+            label:function(context){
+
+              let value = context.raw;
+
+              let porcentaje = (value/total*100).toFixed(1);
+
+              return context.label+": "+value+" ("+porcentaje+"%)";
+
+            }
+
+          }
+
+        }
+
+ 
+
+      },
+
+ 
+
+      cutout:"40%" // efecto dona 3D
+
+    }
+
+ 
+
+  });
+
+ 
+
+}
+
+async function filtrarActividadesManual() {
+
+  const tecnico = choiceTecnico.getValue(true);
+  const categoria = document.getElementById("filtroCategoria").value;
+  const especialidad = document.getElementById("filtroEspecialidad").value;
+  const cont = document.getElementById("actividadesFaltantes");
+
+  if (!tecnico) {
+    cont.innerHTML = "Seleccione un técnico primero";
+    return;
+  }
+
+  cont.innerHTML = "Cargando...";
+
+  let query = supabaseClient
+    .from("PTACTUAL")
+    .select("*");
+
+  // 🔹 aplicar filtros SOLO si existen
+  if (categoria !== "") {
+    query = query.eq("Categoria", categoria);
+  }
+
+ if (especialidad !== "") {
+
+  let mapa = {
+    "Electrico": "E",
+    "Mecanico": "M",
+    "Rigger": "R",
+    "Soldador": "S"
+  };
+
+  const espBD = mapa[especialidad] || especialidad;
+
+  query = query.ilike("Especialidad", espBD);
+}
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    cont.innerHTML = "Error al cargar datos";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    cont.innerHTML = "No hay datos";
+    return;
+  }
+console.log("Tecnico seleccionado:", tecnico);
+console.log("Columnas:", Object.keys(data[0]));
+  // 🔥 FILTRO REAL (esto es lo importante)
+const faltantes = data.filter(row => {
+
+  const valor = row[tecnico];
+
+  if (valor === undefined) {
+    console.warn("Columna no encontrada:", tecnico);
+    return false;
+  }
+
+  return valor === null || valor === "" || Number(valor) === 0;
+
+});
+  if (faltantes.length === 0) {
+    cont.innerHTML = "✅ No tiene actividades pendientes";
+    return;
+  }
+
+  mostrarActividadesAgrupadasPro(faltantes);
+}
+function mostrarActividadesAgrupadasPro(data){
+
+  const cont = document.getElementById("actividadesFaltantes");
+
+  let componentes = {};
+
+  data.forEach(row => {
+
+    const comp = row.Componente || "Sin componente";
+    const desc = row.Descripcion || row["Descripcion de Tarea"];
+    const puntos = Number(row["Puntaje de actividad"] || 0);
+
+    if (!componentes[comp]) {
+      componentes[comp] = [];
+    }
+
+    componentes[comp].push({
+      descripcion: desc,
+      puntos: puntos
+    });
+
+  });
+
+  let html = "";
+
+  Object.keys(componentes).forEach(comp => {
+
+    html += `
+    <details style="margin-bottom:12px;">
+      <summary style="
+        font-weight:600;
+        cursor:pointer;
+        padding:6px;
+        background:#f3f4f6;
+        border-radius:6px;
+      ">
+        ${comp}
+      </summary>
+
+      <ul style="margin-top:8px;">
+    `;
+
+    componentes[comp].forEach(act => {
+
+      let color = act.puntos >= 15 ? "#dc2626" :
+                  act.puntos >= 10 ? "#f59e0b" :
+                  "#16a34a";
+
+     html += `
+  <li style="margin-bottom:6px;">
+    <label style="cursor:pointer;">
+      <input type="checkbox" 
+  onchange="actualizarSimulador()" 
+  data-puntos="${act.puntos}"
+>
+      
+      ${act.descripcion}
+      — <strong style="color:${color};">${act.puntos} pts</strong>
+    </label>
+  </li>
+`;
+
+    });
+
+    html += `
+      </ul>
+    </details>
+    `;
+
+  });
+
+  cont.innerHTML = html;
+}
+
+
+function mostrarConsultaPT(tipo){
+
+document.getElementById("consultaNombre").style.display =
+tipo==="nombre" ? "block" : "none";
+
+document.getElementById("consultaComponente").style.display =
+tipo==="componente" ? "block" : "none";
+
+document.getElementById("btnConsultaNombre").classList.toggle("active", tipo==="nombre");
+document.getElementById("btnConsultaComponente").classList.toggle("active", tipo==="componente");
+
+}
+async function cargarComponentes(){
+
+const select = document.getElementById("selectComponentePT");
+
+const { data, error } = await supabaseClient
+.from("PTACTUAL")
+.select("Componente");
+
+if(error){
+console.error(error);
+return;
+}
+
+if(!data){
+select.innerHTML="<option>No hay datos</option>";
+return;
+}
+
+const componentes = [...new Set(
+data.map(d => d.Componente).filter(c => c)
+)].sort();
+
+select.innerHTML = "<option value=''>Seleccione...</option>";
+
+componentes.forEach(c=>{
+const option=document.createElement("option");
+option.value=c;
+option.textContent=c;
+select.appendChild(option);
+});
+
+}
+
+
+// =============================
+// BUSCAR TECNICOS POR COMPONENTE
+// =============================
+
+async function buscarPorComponente(){
+
+tareasTecnico = {};
+const componente = document.getElementById("selectComponentePT").value;
+const tipoGrua = document.getElementById("selectTipoGrua").value;
+const contenedor = document.getElementById("resultadoComponente");
+
+if(componente===""){
+contenedor.innerHTML="";
+return;
+}
+
+contenedor.innerHTML="Cargando...";
+
+const { data, error } = await supabaseClient
+.from("PTACTUAL")
+.select("*")
+.eq("Componente", componente);
+
+if(error){
+console.error(error);
+contenedor.innerHTML="Error en consulta";
+return;
+}
+
+if(!data || data.length===0){
+contenedor.innerHTML="No hay datos";
+return;
+}
+
+
+// columnas que NO son técnicos
+const excluir=[
+"id",
+"Categoria",
+"Especialidad",
+"Descripcion",
+"Descripcion de Tarea",
+"Componente",
+"Codigo RH",
+"created_at"
+];
+
+const columnas = Object.keys(data[0]).filter(c => !excluir.includes(c));
+
+let experiencia={};
+let totalTareas=0;
+
+
+// recorrer tareas
+data.forEach(row=>{
+
+totalTareas++;
+
+columnas.forEach(nombre=>{
+
+if(Number(row[nombre])===1){
+
+if(!experiencia[nombre]) experiencia[nombre]=0;
+experiencia[nombre]++;
+
+if(!tareasTecnico[nombre]) tareasTecnico[nombre]=[];
+
+tareasTecnico[nombre].push(
+row["Descripcion"] || row["Descripcion de Tarea"]
+);
+
+}
+
+});
+
+});
+
+
+let ranking = Object.entries(experiencia);
+
+ranking.sort((a,b)=>b[1]-a[1]);
+
+if(ranking.length===0){
+contenedor.innerHTML="No hay técnicos con ese filtro";
+return;
+}
+
+
+// determinar nivel
+function obtenerNivel(porcentaje){
+
+if(porcentaje>=80) return "Experto";
+if(porcentaje>=60) return "Avanzado";
+if(porcentaje>=40) return "Intermedio";
+return "Básico";
+
+}
+
+
+// generar tabla
+let html=`<div class="card">
+<h3 style="text-align:center;">Ranking técnico del componente</h3>
+
+<table style="
+width:100%;
+max-width:1100px;
+margin:auto;
+border-collapse:collapse;
+font-size:14px
+">
+
+<tr style="background:#f3f4f6">
+<th style="padding:10px;border:1px solid #ddd">Ranking</th>
+<th style="padding:10px;border:1px solid #ddd">Técnico</th>
+<th style="padding:10px;border:1px solid #ddd">Tareas</th>
+<th style="padding:10px;border:1px solid #ddd">Dominio</th>
+<th style="padding:10px;border:1px solid #ddd">Nivel</th>
+<th style="padding:10px;border:1px solid #ddd">Detalle</th>
+</tr>
+`;
+
+ranking.forEach((r,i)=>{
+
+const tareas=r[1];
+const porcentaje=Math.round((tareas/totalTareas)*100);
+const nivel=obtenerNivel(porcentaje);
+
+let medalla="";
+let estilo="";
+
+if(i===0){
+medalla="";
+estilo="background:#fff7cc;font-weight:700;";
+}
+
+else if(i===1){
+medalla="";
+estilo="background:#f8fafc;";
+}
+
+else if(i===2){
+medalla="";
+estilo="background:#f9fafb;";
+
+
+}
+
+
+html+=`
+<tr style="${estilo}">
+<td style="padding:8px;border:1px solid #ddd">${medalla} ${i+1}</td>
+<td style="padding:8px;border:1px solid #ddd">${r[0]}</td>
+<td style="padding:8px;border:1px solid #ddd">${tareas}</td>
+
+<td style="padding:8px;border:1px solid #ddd">
+
+<div style="background:#e5e7eb;border-radius:8px;height:14px;width:100%">
+
+<div style="
+width:${porcentaje}%;
+background:${porcentaje < 50 ? "#dc2626" : porcentaje < 80 ? "#f59e0b" : "#16a34a"};
+height:100%;
+border-radius:8px;
+"></div>
+
+</div>
+
+${porcentaje}%
+
+</td>
+
+<td style="padding:8px;border:1px solid #ddd">${nivel}</td>
+<td style="padding:8px;border:1px solid #ddd">
+
+<button onclick="mostrarTareas('${r[0]}')" 
+style="
+padding:6px 10px;
+background:#374151;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:12px;
+">
+
+Ver tareas
+
+</button>
+
+</td>
+
+</tr>
+`;
+
+});
+
+html+="</table>";
+
+
+// sugerencia backup técnico
+if(ranking.length>1){
+
+html+=`
+<br>
+<div style="
+background:#f3f4f6;
+padding:12px;
+border-radius:8px;
+font-size:14px;
+">
+
+🔄 <strong>Backup recomendado:</strong> ${ranking[1][0]}
+
+</div>
+
+<div></div>
+
+`;
+
+}
+
+html+="</div>";
+
+contenedor.innerHTML=html;
+
+}
+
+function cambiarTab(btn,index){
+
+const tabs=document.querySelectorAll(".tabItem");
+const slider=document.querySelector(".tabSlider");
+
+tabs.forEach(t=>t.classList.remove("active"));
+
+btn.classList.add("active");
+
+slider.style.transform=`translateX(${index*100}%)`;
+
+// mostrar secciones
+document.getElementById("consultaNombre").style.display =
+index===0 ? "block" : "none";
+
+document.getElementById("consultaComponente").style.display =
+index===1 ? "block" : "none";
+
+}
+// =============================
+// MENU LATERAL PANEL JEFES
+// =============================
+
+const menuItems = document.querySelectorAll(".menuItem");
+
+menuItems.forEach((item, index)=>{
+
+item.addEventListener("click",()=>{
+
+menuItems.forEach(i=>i.classList.remove("active"));
+
+item.classList.add("active");
+
+mostrarSeccionJefe(index);
+
+});
+
+});
+function mostrarTareas(nombre){
+
+const lista = tareasTecnico[nombre];
+
+if(!lista || lista.length===0){
+alert("No tiene tareas registradas");
+return;
+}
+
+let html="<h3>Tareas realizadas</h3><ul>";
+
+lista.forEach(t=>{
+html += "<li>"+t+"</li>";
+});
+
+html += "</ul>";
+
+const ventana = window.open("", "", "width=600,height=500");
+
+ventana.document.write(`
+<html>
+<head>
+<title>Tareas</title>
+<style>
+body{font-family:Segoe UI;padding:20px}
+li{margin-bottom:8px}
+</style>
+</head>
+<body>
+${html}
+</body>
+</html>
+`);
+}
+function cambiarTabHH(btn,index){
+
+  const tabs=document.querySelectorAll(".tabItem");
+  const slider=document.querySelector(".tabSlider");
+
+  tabs.forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+
+  slider.style.transform=`translateX(${index*100}%)`;
+
+  document.getElementById("hhSTS").style.display =
+    index===0 ? "block" : "none";
+
+  document.getElementById("hhRTG").style.display =
+    index===1 ? "block" : "none";
+
+}
+
+function generarBalanceHH(disponiblesData, tipo){
+
+  const resumen = window[`resumen_${tipo}`];
+  if(!resumen) return;
+
+  let labels = [];
+  let valores = [];
+  let htmlTabla = "";
+
+  // =============================
+  // CALCULO BASE
+  // =============================
+  Object.keys(resumen).forEach(esp=>{
+
+    const req = resumen[esp] || 0;
+
+const dispObj = disponiblesData.find(d=>d.Especialidad === esp);
+
+const disp = dispObj ? dispObj.horasDisponibles : 0;
+
+// 🔥 NUEVO
+const personasActuales = dispObj ? Math.round(disp / 168) : 0;
+const personasNecesarias = Math.ceil(req / 168);
+
+const balance = disp - req;
+
+    labels.push(esp);
+    valores.push(balance);
+
+    let color = balance >= 0 ? "#16a34a" : "#dc2626";
+
+    htmlTabla += `
+      <tr>
+<td>${esp}</td>
+<td>${personasNecesarias}</td>
+<td>${personasActuales}</td>
+<td>${disp}</td>
+<td>${req}</td>
+<td style="color:${balance>=0?'#16a34a':'#dc2626'};font-weight:600;">
+  ${balance}
+</td>
+      </tr>
+    `;
+  });
+
+  // =============================
+  // KPIs
+  // =============================
+  let deficitTotal = 0;
+  let excedenteTotal = 0;
+
+  valores.forEach(v=>{
+    if(v < 0) deficitTotal += v;
+    else excedenteTotal += v;
+  });
+
+  let personasFaltantes = Math.ceil(Math.abs(deficitTotal) / 168);
+
+  // =============================
+  // 🔥 ANALISIS FUNCIONAL
+  // =============================
+  let analisis = "";
+  let faltantesDetalle = [];
+  let excedentesDetalle = [];
+
+  Object.keys(resumen).forEach((esp, i)=>{
+
+    const balance = valores[i];
+
+    if(balance < 0){
+      const personas = Math.ceil(Math.abs(balance) / 168);
+
+      faltantesDetalle.push({
+        esp,
+        horas: Math.abs(balance),
+        personas
+      });
+
+    } else if(balance > 0){
+      const personas = Math.floor(balance / 168);
+
+      excedentesDetalle.push({
+        esp,
+        horas: balance,
+        personas
+      });
+    }
+
+  });
+
+  // 🔴 FALTANTES
+  if(faltantesDetalle.length > 0){
+
+    analisis += `
+    <div style="background:#fee2e2;padding:15px;border-radius:10px;margin-bottom:15px;">
+    <strong style="color:#991b1b;">Déficit de personal detectado:</strong><br><br>
+    `;
+
+    faltantesDetalle.forEach(f=>{
+      analisis += `• ${f.esp}: faltan <strong>${f.personas}</strong> personas (${f.horas} HH)<br>`;
+    });
+
+    analisis += `</div>`;
+  }
+
+  // 🟢 EXCEDENTES
+  if(excedentesDetalle.length > 0){
+
+    analisis += `
+    <div style="background:#dcfce7;padding:15px;border-radius:10px;margin-bottom:15px;">
+    <strong style="color:#166534;">Exceso de capacidad:</strong><br><br>
+    `;
+
+    excedentesDetalle.forEach(e=>{
+      analisis += `• ${e.esp}: sobran <strong>${e.personas}</strong> personas (${e.horas} HH)<br>`;
+    });
+
+    analisis += `</div>`;
+  }
+
+  // RECOMENDACION
+  if(faltantesDetalle.length > 0 && excedentesDetalle.length > 0){
+
+    analisis += `
+    <div style="background:#fef3c7;padding:15px;border-radius:10px;">
+    <strong style="color:#92400e;">Recomendación:</strong><br><br>
+    `;
+
+    faltantesDetalle.forEach(f=>{
+
+      const posible = excedentesDetalle.find(e => e.personas > 0);
+
+      if(posible){
+        analisis += `• Invertir horas de <strong>${posible.esp}</strong> a <strong>${f.esp}</strong><br>`;
+      }
+
+    });
+
+    analisis += `</div>`;
+  }
+
+  // =============================
+  // HTML FINAL
+  // =============================
+  // =============================
+  // HTML FINAL (ORDEN CORRECTO)
+  // =============================
+  let html = `
+<div style="max-width:900px;margin:0 auto;">
+
+<!-- 1. TABLA -->
+<div style="
+max-width:700px;
+margin:0 auto 30px auto;
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+">
+
+<h4 style="text-align:center;margin-bottom:15px;">
+Balance HH (Disponibles - Requeridas)
+</h4>
+
+<table style="border-collapse:collapse;width:100%;text-align:center;">
+<tr style="background:#f3f4f6;">
+<th>Especialidad</th>
+<th>Personas MP</th>
+<th>Personas actuales</th>
+<th>HH Disponible</th>
+<th>HH Requerida</th>
+<th>Balance</th>
+</tr>
+
+${htmlTabla}
+
+</table>
+
+</div>
+
+<!-- 2. GRÁFICAS (se mantienen fuera, ya existen arriba) -->
+
+
+<!-- 3. DÉFICIT / EXCEDENTE -->
+<div style="display:flex;gap:20px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;">
+
+<div style="background:#fee2e2;padding:15px;border-radius:10px;min-width:180px;text-align:center;">
+<div style="font-size:12px;color:#991b1b;">Déficit total</div>
+<div style="font-size:22px;font-weight:700;color:#dc2626;">
+${deficitTotal}
+</div>
+</div>
+
+<div style="background:#dcfce7;padding:15px;border-radius:10px;min-width:180px;text-align:center;">
+<div style="font-size:12px;color:#166534;">Excedente</div>
+<div style="font-size:22px;font-weight:700;color:#16a34a;">
+${excedenteTotal}
+</div>
+</div>
+
+<div style="background:#fef3c7;padding:15px;border-radius:10px;min-width:180px;text-align:center;">
+<div style="font-size:12px;color:#92400e;">Personas faltantes</div>
+<div style="font-size:22px;font-weight:700;color:#d97706;">
+${personasFaltantes}
+</div>
+</div>
+
+</div>
+
+<!-- 4. BALANCE / ANALISIS -->
+<h4 style="text-align:center;">Análisis funcional</h4>
+${analisis}
+
+</div>
+`;
+
+let zona = document.querySelector(`.zonaBalance_${tipo}`);
+
+if(!zona){
+  zona = document.createElement("div");
+  zona.className = `zonaBalance_${tipo}`;
+}
+
+zona.innerHTML = html;
+
+
+}
+function actualizarSimulador(){
+
+  const checks = document.querySelectorAll(
+    "#actividadesFaltantes input[type='checkbox']:checked"
+  );
+
+  let puntosSeleccionados = 0;
+
+  checks.forEach(chk=>{
+    puntosSeleccionados += Number(chk.dataset.puntos || 0);
+  });
+
+  const actuales = window.puntosActualesGlobal || 0;
+  const requeridos = window.puntosRequeridosGlobal || 1;
+
+  const total = actuales + puntosSeleccionados;
+
+  // UI
+  document.getElementById("puntosActuales").textContent = actuales;
+  document.getElementById("puntosSeleccionados").textContent = puntosSeleccionados;
+  document.getElementById("puntosProyectados").textContent = total;
+
+  let progreso = Math.round((total / requeridos) * 100);
+  if(progreso > 100) progreso = 100;
+
+  document.getElementById("barraProgresoSimulador").style.width = progreso + "%";
+
+  // MENSAJE INTELIGENTE
+  let mensaje = "";
+
+  if(total >= requeridos){
+    mensaje = "✅ Con estas tareas alcanzas el siguiente nivel";
+  } else {
+    const faltan = requeridos - total;
+    mensaje = `Le faltan ${faltan} puntos para subir de categoria`;
+  }
+
+  document.getElementById("mensajeProgreso").textContent = mensaje;
+
+}
+//acctual enviar preg y resp
+function guardarRespuesta(seccion, index, pregunta, valor){
+
+  if(!respuestasUsuario[seccion]){
+    respuestasUsuario[seccion] = [];
+  }
+
+  respuestasUsuario[seccion][index] = {
+    pregunta: pregunta,
+    respuesta: valor
+  };
+
+}
+/*function generarPlanOptimo(){
+
+  const checks = document.querySelectorAll(
+    "#actividadesFaltantes input[type='checkbox']"
+  );
+
+  let tareas = [];
+
+  checks.forEach(chk=>{
+    tareas.push({
+      elemento: chk,
+      puntos: Number(chk.dataset.puntos || 0)
+    });
+  });
+
+  // 🔥 ordenar de mayor a menor impacto
+  tareas.sort((a,b)=>b.puntos - a.puntos);
+
+  const actuales = window.puntosActualesGlobal || 0;
+  const requeridos = window.puntosRequeridosGlobal || 0;
+
+  let acumulado = actuales;
+
+  // limpiar selección
+  checks.forEach(c=>c.checked = false);
+
+  for(let t of tareas){
+
+    if(acumulado >= requeridos) break;
+
+    t.elemento.checked = true;
+    acumulado += t.puntos;
+
+  }
+
+  actualizarSimulador();
+
+}*/
+function getPregunta(p){
+
+  return (
+    p.Descripcion ||
+    p["Descripcion de Tarea"] ||
+    p.Tarea ||
+    p.Componente ||
+    p.Categoria ||
+    "SIN PREGUNTA REAL"
+  );
+
+}
+async function enviarResultadosFinales(){
+
+  const usuario = currentUser;
+
+  let registros = [];
+
+Object.values(respuestasUsuario).forEach(seccion => {
+
+  if (!Array.isArray(seccion)) return;
+
+  seccion.forEach(item => {
+
+    if (!item) return;
+
+    registros.push({
+      usuario,
+      pregunta: item.pregunta || "SIN PREGUNTA",
+      respuesta: item.respuesta || "",
+      fecha: new Date().toISOString()
+    });
+
+  });
+
+});
+
+  console.log("TOTAL A INSERTAR:", registros.length);
+
+  if (registros.length === 0) {
+    console.warn("No hay datos para insertar");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("resultados_test_tecnico")
+    .insert(registros);
+
+  if (error) {
+    console.error("ERROR SUPABASE:", error);
+    return;
+  }
+
+  alert("Examen enviado correctamente ✅");
+}
+    seccion.fo
+function testRapido(){
+
+  respuestasUsuario = {};
+
+  const preguntas = preguntasGlobal || [];
+
+  respuestasUsuario[0] = preguntas.map(p => ({
+
+    pregunta: p.Preguntas || p.pregunta || "SIN PREGUNTA",
+    respuesta: "TEST"
+
+  }));
+
+  console.log("GENERADO:", respuestasUsuario);
+
+}
+
+function contarTareasTest(){
+
+  const total = seccionesUnicas.length;
+
+  const el = document.getElementById("contadorTareasTest");
+
+  if(el){
+    el.textContent = `Total de tareas: ${total}`;
+  }
+
+}
+async function obtenerTotalTareasTecnico(tecnico){
+
+  const { data, error } = await supabaseClient
+    .from("PTACTUAL")
+    .select(tecnico); // 🔥 solo la columna del técnico
+
+  if(error){
+    console.error(error);
+    return 0;
+  }
+
+  if(!data) return 0;
+
+  // 🔥 SUMAR TODOS LOS 1
+  let total = 0;
+
+  data.forEach(row=>{
+    if(Number(row[tecnico]) === 1){
+      total++;
+    }
+  });
+
+  return total;
+}
+const total = data.reduce((acc, row) => {
+  return acc + (Number(row[tecnico]) === 1 ? 1 : 0);
+}, 0);
+  
+</script>
+
+</body>
+
+</html>
+
+
