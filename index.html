@@ -1465,10 +1465,9 @@ async function cargarCompetenciasUsuario(usuario){
 }
 
  function guardarSeccion(){
-
   const inputs = document.querySelectorAll("#componentesUsuario input");
 
-  let respuestas = [];
+  let valores = [];
   let completas = true;
 
   inputs.forEach((input)=>{
@@ -1478,7 +1477,7 @@ async function cargarCompetenciasUsuario(usuario){
       completas = false;
     }
 
-    respuestas.push(valor);
+    valores.push(valor);
   });
 
   if(!completas){
@@ -1486,15 +1485,27 @@ async function cargarCompetenciasUsuario(usuario){
     return;
   }
 
-  respuestasUsuario[seccionActualIdx] = respuestas;
+  if(!respuestasUsuario[seccionActualIdx]){
+    respuestasUsuario[seccionActualIdx] = [];
+  }
 
-  // 🔥 GUARDAR EN NAVEGADOR
+  inputs.forEach((input, index)=>{
+    if(!respuestasUsuario[seccionActualIdx][index]){
+      respuestasUsuario[seccionActualIdx][index] = {
+        pregunta: input.dataset.pregunta || "",
+        respuesta: ""
+      };
+    }
+
+    respuestasUsuario[seccionActualIdx][index].respuesta = valores[index];
+  });
+
   localStorage.setItem("examen_"+currentUser, JSON.stringify(respuestasUsuario));
 
   alert("Sección guardada ✅");
 
   actualizarProgresoReal();
-  mostrarNavegacion(); // 🔥 refresca colores
+  mostrarNavegacion();
   delete progresoTemporal[seccionActualIdx];
 }
 
